@@ -55,10 +55,10 @@
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="spectatorYellowGradient" spreadMethod="pad" x1="0.366" x2="0" y1="0.5" y2="0.5">
+            <linearGradient id="spectatorYellowGradient" spreadMethod="pad" x1="0.686" x2="0" y1="0.5" y2="0.5">
               <stop offset="0" stop-color="#292929" stop-opacity="0.71"></stop>
-              <stop offset="0.4038" stop-color="#615c46" stop-opacity="0.749"></stop>
-              <stop offset="1" stop-color="#cab857" stop-opacity="0.29"></stop>
+              <stop offset="0.5038" stop-color="#615c46" stop-opacity="0.549"></stop>
+              <stop offset="1" stop-color="#BAAD65" stop-opacity="0.79"></stop>
             </linearGradient>
           </defs>
           <rect
@@ -75,8 +75,8 @@
         <svg class="aac" xmlns="http://www.w3.org/2000/svg">
           <!-- Removed [ngClass] as it's not needed for fill here -->
           <defs>
-            <linearGradient id="observedMainCardGradient" spreadMethod="pad" x1="0" x2="0.526" y1="0.77" y2="0.765">
-              <stop offset="0" stop-color="#b3a23e" stop-opacity="0.439"></stop>
+            <linearGradient id="observedMainCardGradient" spreadMethod="pad" x1="0" x2="0.946" y1="0.77" y2="0.765">
+              <stop offset="0.4" stop-color="#BAAD65" stop-opacity="0.69"></stop>
               <stop offset="1" stop-color="#292929" stop-opacity="0.361"></stop>
             </linearGradient>
           </defs>
@@ -84,9 +84,9 @@
             rx="2" 
             ry="2" 
             x="0" 
-            y="0" 
+            y="45" 
             width="350" 
-            height="95"
+            height="50"
             [attr.fill]="player.isObserved ? 'url(#observedMainCardGradient)' : 'rgba(41,41,41,0.361)'"
           >
           </rect>
@@ -179,6 +179,7 @@
           <div
             class="currency-container"
             [class]="side"
+            *ngIf="!match.showAliveKDA || !player.isAlive"
             [@creditsDeathAnimation]="!player.isAlive"
             [style.transform]="!player.isAlive ? 'translateY(52px) translateX(-140px)' : 'none'"
           >
@@ -207,6 +208,23 @@
           
         >
           {{ player.money }}
+        </div>
+      </div>
+      <div
+        class="alive-kda-container"
+        [class]="side"
+        *ngIf="match.showAliveKDA && player.isAlive"
+        [@creditsDeathAnimation]="!player.isAlive"
+        [style.transform]="!player.isAlive ? 'translateY(52px) translateX(-140px)' : 'none'"
+      >
+        <div
+          class="alive-kda-text"
+          [class]="color"
+          [ngStyle]="{
+            transform: (side === 'right' ? 'scaleX(-1)' : '')
+        }"
+        >
+          {{ player.kills }} / {{ player.deaths }}<span *ngIf="showAssistCounts"> / {{ player.assists }}</span>
         </div>
       </div>
       <div 

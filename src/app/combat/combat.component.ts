@@ -1,35 +1,47 @@
 import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { trigger, transition, style, animate } from "@angular/animations";
+import { NgIf, NgFor } from "@angular/common";
+import {
+  InhouseTrackerPlayercardComponent,
+  InhouseTrackerPlayercardMinimalComponent,
+} from "./playercard/playercard.component";
 
 @Component({
   selector: "app-combat",
+  standalone: true,
   templateUrl: "./combat.component.html",
   styleUrls: ["./combat.component.scss"],
+  imports: [
+    NgIf,
+    NgFor,
+    InhouseTrackerPlayercardComponent,
+    InhouseTrackerPlayercardMinimalComponent,
+  ],
   animations: [
     trigger("slideInLeft", [
       transition("void => in", [
         style({ transform: "translateX(-100vw)", opacity: 0 }),
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(0)", opacity: 1 })),
+        animate("300ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(0)", opacity: 1 })),
       ]),
       transition("in => out", [
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(-100vw)", opacity: 0 })),
+        animate("300ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(-100vw)", opacity: 0 })),
       ]),
       transition("static => out", [
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(-100vw)", opacity: 0 })),
+        animate("300ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(-100vw)", opacity: 0 })),
       ]),
       // No animation for static state
     ]),
     trigger("slideInRight", [
       transition("void => in", [
         style({ transform: "translateX(100vw)", opacity: 0 }),
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(0)", opacity: 1 })),
+        animate("300ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(0)", opacity: 1 })),
       ]),
       transition("in => out", [
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(100vw)", opacity: 0 })),
+        animate("300ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(100vw)", opacity: 0 })),
       ]),
       transition("static => out", [
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(100vw)", opacity: 0 })),
+        animate("300ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateX(100vw)", opacity: 0 })),
       ]),
       // No animation for static state
     ]),

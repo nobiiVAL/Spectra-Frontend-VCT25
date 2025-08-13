@@ -1,9 +1,11 @@
 import { Component, Input } from "@angular/core";
 import { Config } from "../shared/config";
 import { trigger, transition, style, animate } from "@angular/animations";
+import { NgIf, NgClass } from "@angular/common";
 
 @Component({
   selector: "app-abilities",
+  standalone: true,
   templateUrl: "./abilities.component.html",
   styleUrl: "./abilities.component.scss",
   animations: [
@@ -24,6 +26,7 @@ import { trigger, transition, style, animate } from "@angular/animations";
       ]),
     ]),
   ],
+  imports: [NgIf, NgClass],
 })
 export class AbilitiesComponent {
   public readonly assets: string = "../../../assets";

@@ -3,6 +3,7 @@ import { AgentSelectComponent } from "../../agent-select/agent-select.component"
 
 @Component({
   selector: "app-agent-select-testing",
+  imports: [AgentSelectComponent],
   template: `
     <div class="testing-controls">
       <div>

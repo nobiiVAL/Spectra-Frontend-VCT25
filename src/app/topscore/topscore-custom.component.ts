@@ -1,8 +1,10 @@
 import { animate, style, transition, trigger, state } from "@angular/animations";
 import { Component, Input, SimpleChanges, OnChanges } from "@angular/core";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: "app-topscore",
+  standalone: true,
   templateUrl: "./topscore-custom.component.html",
   styleUrls: ["./topscore-custom.component.scss"],
   animations: [
@@ -23,6 +25,7 @@ import { Component, Input, SimpleChanges, OnChanges } from "@angular/core";
       ]),
     ]),
   ],
+  imports: [NgIf],
 })
 export class TopscoreComponent implements OnChanges {
   @Input() match!: any;

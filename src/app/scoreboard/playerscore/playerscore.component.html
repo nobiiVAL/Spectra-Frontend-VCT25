@@ -39,11 +39,20 @@
       [phase]="'shopping'"
       [hideAuxiliary]="hideAuxiliary"
     ></app-abilities>
-    <div class="KDA-tracker-wrapper">
+    <div class="KDA-tracker-wrapper"
+    [ngStyle]="{
+      left: side === 'right' && !player.auxiliaryAvailable.abilities ? '-249px' : '-256px',
+      transform: side === 'left' && player.auxiliaryAvailable.abilities ? 'translateX(-6px)' : 
+                 side === 'right' && player.auxiliaryAvailable ? 'translateX(4px)' : 
+                 'translateX(0px)'
+    }"
+    >
       <p class="KDA-tracker" [class]="side">
         <span class="KDA-kills">{{ player.kills }}</span>
         <span class="KDA-deaths">{{ player.deaths }}</span>
-        <span class="KDA-assists" *ngIf="showAssistCounts">{{ player.assists }}</span>
+        <span class="KDA-assists" *ngIf="showAssistCounts" 
+        [ngStyle]="{ left: side === 'right' ? '55px' : '54px' }"
+        >{{ player.assists }}</span>
       </p>
     </div>
     <div class="weapon-icon-container">

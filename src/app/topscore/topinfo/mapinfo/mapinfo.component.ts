@@ -1,9 +1,11 @@
 import { Component, Input, OnChanges } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-mapinfo",
   templateUrl: "./mapinfo.component.html",
   styleUrls: ["./mapinfo.component.scss"],
+  imports: [CommonModule],
 })
 export class MapinfoComponent implements OnChanges {
   @Input() map!: string;

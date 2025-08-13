@@ -1,18 +1,22 @@
 import { enableProdMode } from "@angular/core";
-import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { bootstrapApplication } from "@angular/platform-browser";
 
-import { AppModule } from "./app/app.module";
+import { AppComponent } from "./app/app.component";
+import { appConfig } from "./app/app.config";
 import { environment } from "./environments/environment";
 import { Config } from "./app/shared/config";
 
-fetch("/assets/config/config.json").then(async (res) => {
-  const configuration: Config = new Config(await res.json());
+fetch("/assets/config/config.json")
+  .then(async (res) => {
+    const configuration = new Config(await res.json());
 
-  if (environment.production) {
-    enableProdMode();
-  }
+    if (environment.production) {
+      enableProdMode();
+    }
 
-  platformBrowserDynamic([{ provide: Config, useValue: configuration }])
-    .bootstrapModule(AppModule)
-    .catch((err) => console.error(err));
-});
+    bootstrapApplication(AppComponent, {
+      ...appConfig,
+      providers: [...appConfig.providers, { provide: Config, useValue: configuration }],
+    }).catch((err) => console.error(err));
+  })
+  .catch((err) => console.error("Failed to load config", err));

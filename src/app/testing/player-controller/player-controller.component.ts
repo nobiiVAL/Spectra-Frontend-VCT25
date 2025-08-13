@@ -1,9 +1,12 @@
 import { booleanAttribute, Component, EventEmitter, Input, Output, OnDestroy } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-player-controller",
+  standalone: true,
   templateUrl: "./player-controller.component.html",
   styleUrl: "./player-controller.component.scss",
+  imports: [CommonModule],
 })
 export class PlayerControllerComponent implements OnDestroy {
   @Output() spikeTakenEvent = new EventEmitter<void>();
@@ -70,7 +73,7 @@ export class PlayerControllerComponent implements OnDestroy {
     scoreboardAvailable: true,
     auxiliaryAvailable: {
       health: true,
-      abilities: true,
+      abilities: false,
       scoreboard: true,
     },
     kills: 0,

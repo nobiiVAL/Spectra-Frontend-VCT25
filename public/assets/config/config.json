@@ -4,6 +4,7 @@
   "sponsorImageUrls": [
     "/assets/misc/logo.webp"
   ],
+  "mapbanEndpoint": "https://mapban-socket.valospectra.com/",
   "sponsorImageRotateSpeed": 5000,
   "attackerColorPrimary": "#b82e3c",
   "attackerColorSecondary": "#ff4557",
@@ -11,6 +12,8 @@
   "defenderColorPrimary": "#25ac79",
   "defenderColorSecondary": "#61eab6",
   "defenderColorShieldCurrency": "#61eab6",
+  "endroundColor": "#0A0C14",
+  "endroundTextColor": "#FFFFFF",
   "showEventName": false,
   "eventName": "Spectra Invitational"
 }

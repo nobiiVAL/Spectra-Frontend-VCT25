@@ -2,6 +2,10 @@ import { trigger, transition, style, animate, group, keyframes } from "@angular/
 import { Component, Input } from "@angular/core";
 import { Config } from "../../shared/config";
 import { AgentNameService } from "../../services/agentName.service";
+import { CommonModule } from "@angular/common";
+import { AbilitiesComponent } from "../../abilities/abilities.component";
+import { ShieldIconComponent } from "./shield-icon/shield-icon.component";
+import { UltimateComponent } from "../../ultimate/ultimate.component";
 
 const componentAnimations = [
   trigger("deathAnimation", [
@@ -100,6 +104,8 @@ const componentAnimations = [
 
 @Component({
   selector: "app-playercard",
+  standalone: true,
+  imports: [CommonModule, AbilitiesComponent, ShieldIconComponent, UltimateComponent],
   templateUrl: "./playercard.component.html",
   styleUrls: ["./playercard.component.scss"],
   animations: componentAnimations,
@@ -122,7 +128,7 @@ export class InhouseTrackerPlayercardComponent {
   }
 
   get spectatorBoxWidth() {
-    return this.player?.isObserved ? 25 : 0;
+    return this.player?.isObserved ? 35 : 0;
   }
 
   get player() {
@@ -158,8 +164,10 @@ export class InhouseTrackerPlayercardComponent {
 
 @Component({
   selector: "app-playercard-minimal",
+  standalone: true,
   templateUrl: "./playercard-minimal.component.html",
   styleUrls: ["./playercard.component.scss"],
   animations: componentAnimations,
+  imports: [CommonModule, UltimateComponent],
 })
 export class InhouseTrackerPlayercardMinimalComponent extends InhouseTrackerPlayercardComponent {}

@@ -10,6 +10,9 @@
     </button>
     <button class="test-button" (click)="toggleInterface()">Toggle interface</button>
     <button class="test-button" (click)="switchBackground()">Switch background</button>
+    <button class="test-button" (click)="toggleAliveKDA()">
+      {{ matchData?.showAliveKDA ? 'Hide' : 'Show' }} Alive KDA
+    </button>
   </div>
   <div class="teamControllerContainer" [class.shop]="roundPhase === 'shopping'">
     <app-team-controller
