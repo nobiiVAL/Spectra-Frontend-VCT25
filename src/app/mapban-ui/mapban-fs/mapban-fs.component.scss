@@ -1,0 +1,42 @@
+/* Mapban Fullscreen Component Styles */
+
+/* Font import for DIN Next W1G Bold */
+@font-face {
+  font-family: 'DIN Next W1G';
+  src: url('../../../../public/assets/fonts/DINNextW1G/dinnextw1g_bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.mapban-fs-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.mapban-fs-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.bo1-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DIN Next W1G', sans-serif;
+  font-weight: bold;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  padding: 2rem;
+}

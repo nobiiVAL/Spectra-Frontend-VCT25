@@ -218,9 +218,9 @@
 }
 
 .spectator-icon {
-  width: 18px;
+  width: 22px;
   aspect-ratio: 1;
-  transform: translate(182px, 40px);
+  transform: translate(185px, 38px);
   z-index: 2;
 }
 
@@ -304,6 +304,34 @@
   color: white;
   left: 10px;
   top: -1px;
+}
+
+.alive-kda-container {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+  flex: 0 0 auto;
+  left: 146px;
+  top: -25px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100px;
+  overflow: hidden;
+}
+
+.alive-kda-text {
+  position: relative;
+  width: 100%;
+  font-family: "DIN Next W1G Medium", Helvetica;
+  font-size: 14px;
+  text-align: center;
+  line-height: normal;
+  white-space: nowrap;
+  color: white;
+  left: 0px;
+  top: -1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .username-container {

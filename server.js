@@ -4,7 +4,7 @@ const app = express();
 const path = require("path");
 
 // Serve static files from the Angular build output directory
-app.use(express.static(path.join(__dirname, "/dist/spectra-frontend/browser")));
+app.use(express.static(path.join(__dirname, "/dist/spectra-frontend")));
 
 // Specific API/proxy routes should come BEFORE the wildcard SPA route
 
@@ -59,7 +59,7 @@ app.get("/proxy-image", async (req, res) => {
 
 // Wildcard route for the Angular SPA - This MUST be AFTER specific API routes
 app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname, "/dist/spectra-frontend/browser/index.html"));
+  res.sendFile(path.join(__dirname, "/dist/spectra-frontend/index.html"));
 });
 
 const port = process.env.PORT || 3000;

@@ -1,0 +1,12 @@
+<div class="grid grid-cols-5 gap-4 w-screen h-screen p-4">
+  <app-mapban-map 
+    *ngFor="let map of selectedMaps; let i = index" 
+    [map]="map"
+    [availableMapNames]="availableMapNames"
+    [teams]="data?.teams || []"
+    [actingTeam]="data?.actingTeam"
+    [stage]="data?.stage || 'ban'"
+    [index]="i"
+    [logoIndex]="logoIndex">
+  </app-mapban-map>
+</div>

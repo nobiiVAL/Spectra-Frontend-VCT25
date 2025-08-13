@@ -1,8 +1,11 @@
 import { Config } from "../shared/config";
 import { Component, Input, AfterViewInit, OnChanges, DoCheck, ViewChild, ElementRef, ChangeDetectorRef } from "@angular/core";
+import { NgIf, NgFor, NgClass } from "@angular/common";
 
 @Component({
   selector: "app-ultimate",
+  standalone: true,
+  imports: [NgIf, NgFor, NgClass],
   templateUrl: "./ultimate.component.html",
   styleUrls: ["./ultimate.component.scss"],
 })

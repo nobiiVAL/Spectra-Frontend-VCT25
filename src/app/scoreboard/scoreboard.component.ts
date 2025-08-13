@@ -1,19 +1,35 @@
-import { Component, Input, OnChanges, SimpleChanges, Pipe, PipeTransform } from "@angular/core";
+import { Component, Input, OnChanges, SimpleChanges, Pipe, PipeTransform, forwardRef } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { trigger, transition, style, animate } from '@angular/animations';
+import { NgIf, NgFor, SlicePipe } from "@angular/common";
+import { RoundreasonsComponent } from "./roundreasons/roundreasons.component";
+import {
+  PlayerscoreComponent,
+  PlayerscoreMinimalComponent,
+} from "./playerscore/playerscore.component";
 
 @Component({
   selector: "app-scoreboard",
+  standalone: true,
   templateUrl: "./scoreboard.component.html",
   styleUrls: ["./scoreboard.component.scss"],
+  imports: [
+    NgIf,
+    NgFor,
+    SlicePipe,
+    RoundreasonsComponent,
+    PlayerscoreComponent,
+    PlayerscoreMinimalComponent,
+    forwardRef(() => ScoreboardOrderPipe),
+  ],
   animations: [
     trigger("slideUpDown", [
       transition(":enter", [
         style({ transform: "translateY(100vh)", opacity: 0 }),
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateY(0)", opacity: 1 })),
+        animate("400ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateY(0)", opacity: 1 })),
       ]),
       transition(":leave", [
-        animate("500ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateY(100vh)", opacity: 0 })),
+        animate("400ms cubic-bezier(0.4,0,0.2,1)", style({ transform: "translateY(100vh)", opacity: 0 })),
       ]),
     ]),
   ],
@@ -83,9 +99,7 @@ export class ScoreboardComponent implements OnChanges {
   }
 }
 
-@Pipe({
-  name: "scoreboardOrder",
-})
+@Pipe({ name: "scoreboardOrder" })
 export class ScoreboardOrderPipe implements PipeTransform {
   transform(players: any[]): any[] {
     if (!Array.isArray(players)) return [];

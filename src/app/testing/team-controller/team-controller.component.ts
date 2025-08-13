@@ -13,8 +13,10 @@ import { PlayerControllerComponent } from "../player-controller/player-controlle
 
 @Component({
   selector: "app-team-controller",
+  standalone: true,
   templateUrl: "./team-controller.component.html",
   styleUrl: "./team-controller.component.scss",
+  imports: [PlayerControllerComponent],
 })
 export class TeamControllerComponent {
   @ViewChild("playerControllerSpace", { read: ViewContainerRef })

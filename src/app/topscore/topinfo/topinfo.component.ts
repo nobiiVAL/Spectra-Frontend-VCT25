@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { Config } from "../../shared/config";
+import { NgIf, NgFor } from "@angular/common";
+import { MapinfoComponent } from "./mapinfo/mapinfo.component";
 
 @Component({
   selector: "app-topinfo",
@@ -22,6 +24,7 @@ import { Config } from "../../shared/config";
       ]),
     ]),
   ],
+  imports: [NgIf, MapinfoComponent, NgFor],
 })
 export class TopinfoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() match!: any;

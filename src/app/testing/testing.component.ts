@@ -3,11 +3,14 @@ import { TrackerComponent } from "../tracker/tracker.component";
 import { ActivatedRoute } from "@angular/router";
 import { TeamControllerComponent } from "./team-controller/team-controller.component";
 import { HttpClient } from "@angular/common/http";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: "app-testing",
+  standalone: true,
   templateUrl: "./testing.component.html",
   styleUrls: ["./testing.component.scss"],
+  imports: [TrackerComponent, NgIf, TeamControllerComponent],
 })
 export class TestingComponent implements AfterViewInit {
   @ViewChild(TrackerComponent) trackerComponent!: TrackerComponent;
@@ -53,6 +56,7 @@ export class TestingComponent implements AfterViewInit {
         next: (data: any) => {
           this.previewMatch = data;
           this.matchData = this.previewMatch;
+          this.matchData.showAliveKDA = false; // Initialize for preview matches
           console.log("Preview match data loaded:", this.matchData);
           this.team2.swapColor();
           this.trackerComponent.updateMatch(this.matchData);
@@ -77,6 +81,7 @@ export class TestingComponent implements AfterViewInit {
       this.matchData.teams[1] = this.team2.getData();
 
       this.matchData.switchRound = 13;
+      this.matchData.showAliveKDA = false; // Initialize the showAliveKDA property
 
       this.matchData.teams[0].roundRecord = [
         { type: "detonated", wasAttack: true, round: 1 },
@@ -211,8 +216,22 @@ export class TestingComponent implements AfterViewInit {
   }
 
   detonateDefuseSpike(): void {
-    this.matchData.spikeState = { planted: false, detonated: false, defused: false };
-    this.isSpikePlanted = false;
+    // Randomly choose between defuse and detonate for testing
+    const isDefused = Math.random() > 0.5;
+    
+    if (isDefused) {
+      this.matchData.spikeState = { planted: true, detonated: false, defused: true };
+    } else {
+      this.matchData.spikeState = { planted: true, detonated: true, defused: false };
+    }
+    
+    // After animation time, reset the spike state
+    setTimeout(() => {
+      this.matchData.spikeState = { planted: false, detonated: false, defused: false };
+      this.isSpikePlanted = false;
+      this.pushUpdatesToTracker();
+    }, 1000); // Wait for animation to complete
+    
     this.pushUpdatesToTracker();
   }
 
@@ -226,5 +245,10 @@ export class TestingComponent implements AfterViewInit {
     if (this.isSpikePlanted && (this.backgroundClassId == 1 || this.backgroundClassId == 3)) {
       this.switchBackground();
     }
+  }
+
+  toggleAliveKDA(): void {
+    this.matchData.showAliveKDA = !this.matchData.showAliveKDA;
+    this.pushUpdatesToTracker();
   }
 }

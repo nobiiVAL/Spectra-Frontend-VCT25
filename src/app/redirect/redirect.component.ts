@@ -1,14 +1,17 @@
 import { Component, OnInit } from "@angular/core";
-import { Config } from "../shared/config";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-redirect",
-  template: ``,
+  standalone: true,
+  template: '',
+  styles: []
 })
 export class RedirectComponent implements OnInit {
-  constructor(private config: Config) {}
+  constructor(private router: Router) {}
 
-  ngOnInit() {
-    window.location.href = this.config.redirectUrl;
+  ngOnInit(): void {
+    // Instead of window.location.href, use Angular router
+    this.router.navigateByUrl('/testing');
   }
 }

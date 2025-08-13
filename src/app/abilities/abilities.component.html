@@ -51,11 +51,6 @@
   [@availableWhileDead]="!player.isAlive"
 >
   <div class="ability-wrapper">
-    <img
-      class="ability-icon available-while-dead"
-      src="{{ assets }}/ability2/{{ player.agentInternal }}Ability2.webp"
-      [class]="getAvailability(player.abilities?.ability2 || 0)"
-    />
     <span
         class="ability-dot"
         [ngClass]="{ unavailable: (player.abilities?.ability2 || 0) === 0 }"

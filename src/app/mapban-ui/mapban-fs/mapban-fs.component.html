@@ -1,0 +1,16 @@
+<!-- Mapban Fullscreen Component Template -->
+<div class="mapban-fs-container">
+  <!-- Show Rive canvas for BO3/BO5 formats -->
+  <canvas 
+    #riveCanvas 
+    class="mapban-fs-canvas"
+    [style.display]="isBO1Format ? 'none' : 'block'">
+  </canvas>
+  
+  <!-- Show message for BO1 format -->
+  <div 
+    class="bo1-message"
+    [style.display]="isBO1Format ? 'flex' : 'none'">
+    The fullscreen mapban overlay is only intended for BO3 or BO5 matches.
+  </div>
+</div>

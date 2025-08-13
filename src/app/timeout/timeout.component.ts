@@ -4,15 +4,17 @@ import { SocketService } from "../services/SocketService";
 import { ActivatedRoute } from "@angular/router";
 import { Config } from "../shared/config";
 import { trigger, transition, style, animate } from "@angular/animations";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-timeout",
+  standalone: true,
+  imports: [TrackerComponent, CommonModule],
   templateUrl: "./timeout.component.html",
   styleUrls: ["./timeout.component.scss"],
   animations: [
     trigger("fade", [
       transition(":enter", [style({ opacity: "0" }), animate("0.3s", style({ opacity: "1" }))]),
-
       transition(":leave", animate("0.3s", style({ opacity: "0" }))),
     ]),
     trigger("timeoutPopup", [
@@ -82,7 +84,10 @@ export class TimeoutComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.timeout = this.match.timeoutState;
-    this.socketService = SocketService.getInstance(this.config.serverEndpoint, this.groupCode);
+    this.socketService = SocketService.getInstance().connectMatch(
+      this.config.serverEndpoint,
+      this.groupCode,
+    );
     this.tournamentBackgroundUrl =
       this.match?.tools?.tournamentInfo?.backdropUrl &&
       this.match.tools.tournamentInfo.backdropUrl !== ""
@@ -95,7 +100,7 @@ export class TimeoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.timeLeft = this.match.tools.timeoutDuration || 60;
-    this.socketService.subscribe((data: any) => {
+    this.socketService.subscribeMatch((data: any) => {
       this.updateTimeout(data);
     });
   }
