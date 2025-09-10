@@ -279,10 +279,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         return this.preloadMapImages();
       })
       .then(() => {
-        console.log("All assets preloaded (cache warmed). Ready for Rive initialization.");
-        
-        // Initialize socket service after preloading - Rive will be initialized when team data arrives
-        console.log("🔌 Setting up socket connection to wait for match data...");
         this.socketService = SocketService.getInstance().connectMatch(
           this.config.serverEndpoint,
           this.groupCode,
@@ -409,8 +405,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
     
     // Map image is preloaded
     this.assetsToLoad.add('map');
-    
-    console.log(`📋 Expecting ${this.assetsToLoad.size} assets to load:`, Array.from(this.assetsToLoad));
   }
 
   private markAssetAsLoaded(assetName: string): void {
@@ -461,14 +455,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.isInitializing = true;
-
-    // Debug: Log team URLs to see what we're working with
-    console.log("🔍 Initializing Rive with team URLs:", {
-      team1Url: this.team1Url,
-      team2Url: this.team2Url,
-      team1Raw: this.match?.teams?.[0]?.teamUrl,
-      team2Raw: this.match?.teams?.[1]?.teamUrl
-    });
 
     // Reset asset tracking
     this.assetsToLoad.clear();
@@ -546,7 +532,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
           if (/^https?:\/\//.test(url) && !url.startsWith('/proxy-image')) {
             url = `/proxy-image?url=${encodeURIComponent(url)}`;
           }
-          console.log("🏆 Loading team1 logo:", url);
           const result = await loadAndDecodeImageHelper(asset, url, this.logoWidth, this.logoHeight);
           if (result) {
             this.markAssetAsLoaded(asset.name);
@@ -559,7 +544,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
           if (/^https?:\/\//.test(url) && !url.startsWith('/proxy-image')) {
             url = `/proxy-image?url=${encodeURIComponent(url)}`;
           }
-          console.log("🏆 Loading team2 logo:", url);
           const result = await loadAndDecodeImageHelper(asset, url, this.logoWidth, this.logoHeight);
           if (result) {
             this.markAssetAsLoaded(asset.name);
@@ -677,10 +661,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       this.match.teams[0].teamUrl !== "" &&
       this.match.teams[1].teamUrl !== ""
     ) {
-      console.log("🚀 Team URLs are available, initializing Rive:", {
-        team1: this.match.teams[0].teamUrl,
-        team2: this.match.teams[1].teamUrl
-      });
       this.initializeRive();
       return;
     }
@@ -699,16 +679,12 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       this.updatePlayerLockedTextColors();
       this.updateMapVisualizer();
     } else if (!this.riveInitialized) {
-      console.log("🔄 Match data updated, but waiting for team URLs. Current URLs:", {
-        team1: this.match.teams[0].teamUrl,
-        team2: this.match.teams[1].teamUrl
-      });
+      // Waiting for team URLs
     }
   }
 
   private async updatePlayerAgentPortraits(): Promise<void> {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerAgentPortraits: Rive not ready");
       return;
     }
 
@@ -726,8 +702,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerAgentPortraits view model not found");
         return;
       }
-
-      console.log("🎯 Updating ALL player agent portraits via data binding");
 
       // Update player portraits for both teams (players 1-10)
       let playerIndex = 1;
@@ -774,7 +748,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private async updatePlayerAgentPortraitsSelectively(): Promise<void> {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerAgentPortraitsSelectively: Rive not ready");
       return;
     }
 
@@ -792,8 +765,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerAgentPortraits view model not found");
         return;
       }
-
-      console.log("🎯 Checking for player changes to update selectively");
 
       let playerIndex = 1;
       const updatesNeeded: Array<{ playerIndex: number, player: any }> = [];
@@ -840,8 +811,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
       // Only update players that have changed
       if (updatesNeeded.length > 0) {
-        this.log(`🔄 Updating ${updatesNeeded.length} changed players:`, updatesNeeded.map(u => `P${u.playerIndex}`));
-        
         for (const update of updatesNeeded) {
           await this.updatePlayerPortrait(playerAgentPortraitsVM, update.playerIndex, update.player);
         }
@@ -849,7 +818,7 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         // Update state tracking after selective updates
         this.updatePlayerStateTracking();
       } else {
-        console.log("✅ No player changes detected, skipping update");
+        // No player changes detected, skipping update
       }
 
     } catch (error) {
@@ -864,9 +833,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
     if (!previousState) {
       // First time checking this player
-      this.log(`🔍 P${playerIndex} - First time check: agent=${currentAgentInternal}, locked=${currentIsLocked}`);
-      
-      // Set initial locked state and advance state machine for any player
       this.updatePlayerLockedStateAndAdvance(playerIndex, currentIsLocked);
       
       return true;
@@ -877,8 +843,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
     const hasChanged = agentChanged || lockedChanged;
 
     if (hasChanged) {
-      this.log(`🔍 P${playerIndex} - Change detected: agent=${previousState.agentInternal}→${currentAgentInternal}, locked=${previousState.isLocked}→${currentIsLocked}`);
-      
       // Update locked state and advance state machine when locked state changes
       if (lockedChanged) {
         this.updatePlayerLockedStateAndAdvance(playerIndex, currentIsLocked);
@@ -941,7 +905,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private async updatePlayerRoles(): Promise<void> {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerRoles: Rive not ready");
       return;
     }
 
@@ -959,8 +922,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerRoles view model not found");
         return;
       }
-
-      console.log("🎭 Updating ALL player agent roles via data binding");
 
       // Update player roles for both teams (players 1-10)
       let playerIndex = 1;
@@ -1007,7 +968,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private async updatePlayerRolesSelectively(): Promise<void> {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerRolesSelectively: Rive not ready");
       return;
     }
 
@@ -1025,8 +985,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerRoles view model not found");
         return;
       }
-
-      console.log("🎭 Checking for role changes to update selectively");
 
       let playerIndex = 1;
       const roleUpdatesNeeded: Array<{ playerIndex: number, player: any }> = [];
@@ -1073,13 +1031,11 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
       // Only update roles for players that have changed
       if (roleUpdatesNeeded.length > 0) {
-        this.log(`🔄 Updating ${roleUpdatesNeeded.length} changed player roles:`, roleUpdatesNeeded.map(u => `P${u.playerIndex}`));
-        
         for (const update of roleUpdatesNeeded) {
           await this.updatePlayerRole(playerRolesVM, update.playerIndex, update.player);
         }
       } else {
-        console.log("✅ No role changes detected, skipping role update");
+        // No role changes detected, skipping role update
       }
 
     } catch (error) {
@@ -1113,7 +1069,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
                 // Decode the role image using Rive's decodeImage function
                 const decodedRoleImage = await decodeImage(roleImageBytes);
                 imageProperty.value = decodedRoleImage;
-                this.log(`✅ Updated ${propertyName} to ${agentRole} (${player.agentInternal} → ${agentDisplayName})`);
               } catch (decodeError) {
                 console.error(`Failed to decode role image for ${agentRole}:`, decodeError);
                 imageProperty.value = null;
@@ -1133,7 +1088,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       } else {
         // Clear the role image if no agent selected
         imageProperty.value = null;
-        this.log(`🔄 Cleared ${propertyName}`);
       }
     } catch (error) {
       console.error(`Error updating player ${playerNumber} role:`, error);
@@ -1142,7 +1096,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private async updatePlayerLockedStates(): Promise<void> {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerLockedStates: Rive not ready");
       return;
     }
 
@@ -1153,8 +1106,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("ViewModelInstance not found for locked states");
         return;
       }
-
-      console.log("Main updatePlayerLockedStates: Successfully accessed view model instance");
 
       let playerIndex = 1;
       
@@ -1222,7 +1173,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
             const deltaTime = 0.016; // ~60fps frame time
             stateMachineInstance.advance(deltaTime);
             artboardInstance.advance(deltaTime);
-            console.log(`⚡ Advanced state machine and artboard for property update`);
           } else {
             console.warn('Could not access state machine or artboard instances');
           }
@@ -1230,8 +1180,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
           console.warn('Error advancing state machine/artboard:', error);
         }
       }
-      
-      console.log(`🔒 Updated ${propertyName}: ${previousValue} → ${isLocked}`);
       
       // Verify the change was applied
       setTimeout(() => {
@@ -1262,7 +1210,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
             // Decode the image using Rive's decodeImage function
             const decodedImage = await decodeImage(imageBytes);
             imageProperty.value = decodedImage;
-            this.log(`✅ Updated ${propertyName} to ${player.agentInternal}`);
           } catch (decodeError) {
             console.error(`Failed to decode image for ${player.agentInternal}:`, decodeError);
             imageProperty.value = null;
@@ -1274,7 +1221,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       } else {
         // Clear the image if no agent selected
         imageProperty.value = null;
-        this.log(`🔄 Cleared ${propertyName}`);
       }
     } catch (error) {
       console.error(`Error updating player ${playerNumber} portrait:`, error);
@@ -1283,7 +1229,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updateTeamColors(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updateTeamColors: Rive not ready");
       return;
     }
 
@@ -1295,85 +1240,70 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         return;
       }
 
-      console.log("🎨 Updating team colors via data binding");
-
-      // Define colors for attackers and defenders
-      const attackerColor = 0xFFE5375F; // #E5375F (red/pink)
-      const defenderColor = 0xFF46F4CF; // #46F4CF (teal/cyan)
-      
-      // Define gradient colors with opacity
-      const attackerGradientStart = 0x8FE5375F; // 56% opacity (0x8F = 143/255 ≈ 56%)
-      const attackerGradientEnd = 0x00E5375F;   // 0% opacity
-      const defenderGradientStart = 0x8F46F4CF; // 56% opacity
-      const defenderGradientEnd = 0x0046F4CF;   // 0% opacity
-
-      // Determine colors based on team attacking status
+      // Team color logic
+      const attackerColor = 0xFFE5375F;
+      const defenderColor = 0xFF46F4CF;
       const team1IsAttacking = this.match?.teams?.[0]?.isAttacking || false;
       const team2IsAttacking = this.match?.teams?.[1]?.isAttacking || false;
-
-      // Set team colors (leftTeam is team1, rightTeam is team2)
       const leftTeamColor = team1IsAttacking ? attackerColor : defenderColor;
       const rightTeamColor = team2IsAttacking ? attackerColor : defenderColor;
 
-      // Set gradient colors
-      const leftGradientStart = team1IsAttacking ? attackerGradientStart : defenderGradientStart;
-      const leftGradientEnd = team1IsAttacking ? attackerGradientEnd : defenderGradientEnd;
-      const rightGradientStart = team2IsAttacking ? attackerGradientStart : defenderGradientStart;
-      const rightGradientEnd = team2IsAttacking ? attackerGradientEnd : defenderGradientEnd;
-
-      // Update leftTeam color
+      // Set team colors only
       const leftTeamColorProperty = viewModelInstance.color("leftTeam");
-      if (leftTeamColorProperty) {
-        leftTeamColorProperty.value = leftTeamColor;
-        const colorName = team1IsAttacking ? "attacker" : "defender";
-        this.log(`✅ Updated leftTeam color to ${colorName} color`);
-      } else {
-        console.warn("leftTeam color property not found");
-      }
-
-      // Update rightTeam color
+      if (leftTeamColorProperty) leftTeamColorProperty.value = leftTeamColor;
       const rightTeamColorProperty = viewModelInstance.color("rightTeam");
-      if (rightTeamColorProperty) {
-        rightTeamColorProperty.value = rightTeamColor;
-        const colorName = team2IsAttacking ? "attacker" : "defender";
-        this.log(`✅ Updated rightTeam color to ${colorName} color`);
-      } else {
-        console.warn("rightTeam color property not found");
+      if (rightTeamColorProperty) rightTeamColorProperty.value = rightTeamColor;
+
+      // Access the teamGradients nested view model
+      const teamGradientsVM = viewModelInstance.viewModel("teamGradients");
+      if (!teamGradientsVM) {
+        console.error("teamGradients view model not found!");
+        return;
       }
 
-      // Update gradient colors
-      const leftGlowGradientStartProperty = viewModelInstance.color("leftGlowGradientStart");
-      if (leftGlowGradientStartProperty) {
-        leftGlowGradientStartProperty.value = leftGradientStart;
-        this.log(`✅ Updated leftGlowGradientStart`);
-      } else {
-        console.warn("leftGlowGradientStart color property not found");
+      // Set leftGlowGradientStart - left team color at 56% opacity
+      const leftGlowGradientStart = teamGradientsVM.color("leftGlowGradientStart");
+      if (leftGlowGradientStart) {
+        const leftStartColor = team1IsAttacking ? 0x8FE5375F : 0x8F46F4CF;
+        leftGlowGradientStart.value = leftStartColor;
       }
 
-      const leftGlowGradientEndProperty = viewModelInstance.color("leftGlowGradientEnd");
-      if (leftGlowGradientEndProperty) {
-        leftGlowGradientEndProperty.value = leftGradientEnd;
-        this.log(`✅ Updated leftGlowGradientEnd`);
-      } else {
-        console.warn("leftGlowGradientEnd color property not found");
+      // Set leftGlowGradientEnd - left team color at 0% opacity
+      const leftGlowGradientEnd = teamGradientsVM.color("leftGlowGradientEnd");
+      if (leftGlowGradientEnd) {
+        const leftEndColor = team1IsAttacking ? 0x00E5375F : 0x0046F4CF;
+        leftGlowGradientEnd.value = leftEndColor;
       }
 
-      const rightGlowGradientStartProperty = viewModelInstance.color("rightGlowGradientStart");
-      if (rightGlowGradientStartProperty) {
-        rightGlowGradientStartProperty.value = rightGradientStart;
-        this.log(`✅ Updated rightGlowGradientStart`);
-      } else {
-        console.warn("rightGlowGradientStart color property not found");
+      // Set rightGlowGradientStart - right team color at 56% opacity
+      const rightGlowGradientStart = teamGradientsVM.color("rightGlowGradientStart");
+      if (rightGlowGradientStart) {
+        const rightStartColor = team2IsAttacking ? 0x8FE5375F : 0x8F46F4CF;
+        rightGlowGradientStart.value = rightStartColor;
       }
 
-      const rightGlowGradientEndProperty = viewModelInstance.color("rightGlowGradientEnd");
-      if (rightGlowGradientEndProperty) {
-        rightGlowGradientEndProperty.value = rightGradientEnd;
-        this.log(`✅ Updated rightGlowGradientEnd`);
-      } else {
-        console.warn("rightGlowGradientEnd color property not found");
+      // Set rightGlowGradientEnd - right team color at 0% opacity
+      const rightGlowGradientEnd = teamGradientsVM.color("rightGlowGradientEnd");
+      if (rightGlowGradientEnd) {
+        const rightEndColor = team2IsAttacking ? 0x00E5375F : 0x0046F4CF;
+        rightGlowGradientEnd.value = rightEndColor;
       }
 
+      // Force animation refresh after setting gradient properties
+      if (this.riveInstance) {
+        try {
+          const stateMachineInstance = (this.riveInstance as any).stateMachineInstances?.[0];
+          const artboardInstance = (this.riveInstance as any).artboard;
+          
+          if (stateMachineInstance && artboardInstance) {
+            const deltaTime = 0.016;
+            stateMachineInstance.advance(deltaTime);
+            artboardInstance.advance(deltaTime);
+          }
+        } catch (error) {
+          console.warn("Error advancing animation for gradient refresh:", error);
+        }
+      }
     } catch (error) {
       console.error("Error updating team colors:", error);
     }
@@ -1381,7 +1311,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updateTeamNames(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updateTeamNames: Rive not ready");
       return;
     }
 
@@ -1393,14 +1322,11 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         return;
       }
 
-      console.log("📝 Updating team names via data binding");
-
       // Update team 1 name
       const team1NameProperty = viewModelInstance.string("team1Name");
       if (team1NameProperty) {
         const team1Name = (this.match?.teams?.[0]?.teamName || "TEAM A").toUpperCase();
         team1NameProperty.value = team1Name;
-        this.log(`✅ Updated team1Name to: ${team1Name}`);
       } else {
         console.warn("team1Name string property not found");
       }
@@ -1410,7 +1336,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       if (team2NameProperty) {
         const team2Name = (this.match?.teams?.[1]?.teamName || "TEAM B").toUpperCase();
         team2NameProperty.value = team2Name;
-        this.log(`✅ Updated team2Name to: ${team2Name}`);
       } else {
         console.warn("team2Name string property not found");
       }
@@ -1422,7 +1347,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updateTeamSides(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updateTeamSides: Rive not ready");
       return;
     }
 
@@ -1434,8 +1358,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         return;
       }
 
-      console.log("🏹 Updating team sides via data binding");
-
       // Determine team sides based on attacking status
       const team1Side = this.match?.teams?.[0]?.isAttacking ? "ATK" : "DEF";
       const team2Side = this.match?.teams?.[1]?.isAttacking ? "ATK" : "DEF";
@@ -1444,7 +1366,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       const team1SideProperty = viewModelInstance.string("team1Side");
       if (team1SideProperty) {
         team1SideProperty.value = team1Side;
-        this.log(`✅ Updated team1Side to: ${team1Side}`);
       } else {
         console.warn("team1Side string property not found");
       }
@@ -1453,7 +1374,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       const team2SideProperty = viewModelInstance.string("team2Side");
       if (team2SideProperty) {
         team2SideProperty.value = team2Side;
-        this.log(`✅ Updated team2Side to: ${team2Side}`);
       } else {
         console.warn("team2Side string property not found");
       }
@@ -1465,7 +1385,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updatePlayerNames(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerNames: Rive not ready");
       return;
     }
 
@@ -1483,8 +1402,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerNames view model not found");
         return;
       }
-
-      console.log("👤 Updating player names via data binding");
 
       let playerIndex = 1;
       
@@ -1538,11 +1455,9 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       if (player) {
         const playerName = this.getPlayerDisplayName(player);
         stringProperty.value = playerName;
-        this.log(`✅ Updated ${propertyName} to: ${playerName}`);
       } else {
         // Clear the name if no player
         stringProperty.value = "";
-        this.log(`🔄 Cleared ${propertyName}`);
       }
     } catch (error) {
       console.error(`Error updating player ${playerNumber} name:`, error);
@@ -1551,7 +1466,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updatePlayerAgentNames(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerAgentNames: Rive not ready");
       return;
     }
 
@@ -1569,8 +1483,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerAgents view model not found");
         return;
       }
-
-      console.log("🎭 Updating player agent names via data binding");
 
       let playerIndex = 1;
       
@@ -1626,11 +1538,9 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         const agentDisplayName = AgentNameService.getAgentName(player.agentInternal);
         const agentName = (agentDisplayName || player.agentInternal).toUpperCase();
         stringProperty.value = agentName;
-        this.log(`✅ Updated ${propertyName} to: ${agentName} (from ${player.agentInternal})`);
       } else {
         // Clear the agent name if no agent selected
         stringProperty.value = "";
-        this.log(`🔄 Cleared ${propertyName}`);
       }
     } catch (error) {
       console.error(`Error updating player ${playerNumber} agent name:`, error);
@@ -1639,7 +1549,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updatePlayerLockedTextColors(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updatePlayerLockedTextColors: Rive not ready");
       return;
     }
 
@@ -1657,8 +1566,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         console.error("playerLockedText view model not found");
         return;
       }
-
-      console.log("🎨 Updating player locked text colors via data binding");
 
       let playerIndex = 1;
       
@@ -1714,11 +1621,9 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       if (isLocked) {
         // Locked: #D9CD8F (gold/yellow)
         colorProperty.value = 0xFFD9CD8F; // ARGB format: 0xAARRGGBB
-        this.log(`✅ Updated ${propertyName} to locked color #D9CD8F`);
       } else {
         // Not locked: #4E4E4E (gray)
         colorProperty.value = 0xFF616161; // ARGB format: 0xAARRGGBB
-        this.log(`✅ Updated ${propertyName} to unlocked color #616161`);
       }
     } catch (error) {
       console.error(`Error updating player ${playerNumber} locked text color:`, error);
@@ -1727,7 +1632,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updateTimer(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updateTimer: Rive not ready");
       return;
     }
 
@@ -1761,7 +1665,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private async updateMap(): Promise<void> {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updateMap: Rive not ready");
       return;
     }
 
@@ -1802,7 +1705,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
             const decodedMapImage = await decodeImage(mapImageBytes);
             mapImageProperty.value = decodedMapImage;
             this.currentMap = currentMap; // Track the updated map
-            console.log(`🗺️ Updated map to: ${currentMap}`);
           } catch (decodeError) {
             console.error(`Failed to decode map image for ${currentMap}:`, decodeError);
             mapImageProperty.value = null;
@@ -1842,7 +1744,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       const timerDisplayedProperty = viewModelInstance.boolean("timerDisplayed");
       if (timerDisplayedProperty) {
         timerDisplayedProperty.value = true;
-        console.log("✅ Timer display enabled");
       } else {
         console.warn("timerDisplayed boolean property not found");
       }
@@ -1880,14 +1781,12 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       const timerDisplayedProperty = viewModelInstance.boolean("timerDisplayed");
       if (timerDisplayedProperty) {
         timerDisplayedProperty.value = false;
-        console.log("✅ Timer display disabled");
       }
 
       // Reset timer to 0
       const timeProperty = viewModelInstance.number("time");
       if (timeProperty) {
         timeProperty.value = 0;
-        console.log("✅ Timer value reset to 0");
       }
 
     } catch (error) {
@@ -1949,7 +1848,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
 
   private updateMapVisualizer(): void {
     if (!this.riveInstance || !this.riveInitialized) {
-      console.log("updateMapVisualizer: Rive not ready");
       return;
     }
 
@@ -2002,7 +1900,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       if (mapsNeeded >= 1) {
         if (bo1Property) {
           bo1Property.value = 1;
-          console.log("✅ Set bo1 to 1");
         } else {
           console.warn("bo1 number property not found");
         }
@@ -2011,7 +1908,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       if (mapsNeeded >= 2) {
         if (bo3Property) {
           bo3Property.value = 1;
-          console.log("✅ Set bo3 to 1 (Best of 3)");
         } else {
           console.warn("bo3 number property not found");
         }
@@ -2020,7 +1916,6 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       if (mapsNeeded >= 3) {
         if (bo5Property) {
           bo5Property.value = 1;
-          console.log("✅ Set bo5 to 1 (Best of 5)");
         } else {
           console.warn("bo5 number property not found");
         }
