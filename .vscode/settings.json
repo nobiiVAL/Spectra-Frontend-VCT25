@@ -1,4 +1,7 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "FSharp.suggestGitignore": false
+  "angular-schematics.schematicsDefaultOptions": {
+    "angular-*": {
+      "externalTemplate": true
+    }
+  }
 }

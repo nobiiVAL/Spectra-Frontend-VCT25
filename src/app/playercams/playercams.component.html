@@ -1,0 +1,75 @@
+@for (player of match.teams[0].players; track $index) {
+  @if (streams.has(player.fullName)) {
+    <div class="playercam-container" [class.hidden]="match.roundPhase !== 'combat' || !player.isObserved">
+      <div class="playercam-main">
+        <svg class="playercam-bg">
+          <rect class="playercam-bg-rect" rx="0" ry="0" x="0" y="0" width="302" height="172"></rect>
+        </svg>
+        <div class="playercam-video">
+          <iframe
+            allow="camera;fullscreen;autoplay;"
+            [src]="streams.get(player.fullName)"
+            class="w-full h-full"
+          ></iframe>
+        </div>
+        <div class="playercam-team-logo">
+          <img 
+            [src]="match.teams[0].teamUrl || '../../../assets/misc/icon.webp'" 
+            [alt]="match.teams[0].teamName || 'Team Logo'"
+            class="team-logo-img"
+          />
+        </div>
+        <svg class="playercam-overlay">
+          <rect class="playercam-overlay-rect" rx="0" ry="0" x="0" y="0" width="294" height="34"></rect>
+        </svg>
+        <div class="playercam-name">
+          <span>{{ player.fullName | nameOverride: player.name : getOverrideNames() }}</span>
+        </div>
+        <svg class="playercam-accent" [class]="match.teams[0].isAttacking ? 'attacker' : 'defender'">
+          <rect class="playercam-accent-rect" rx="0" ry="0" x="0" y="0" width="4" height="34"></rect>
+        </svg>
+        <div class="playercam-kda">
+          <span>{{ player.kills }}/{{ player.deaths }}/{{ player.assists }}</span>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@for (player of match.teams[1].players; track $index) {
+  @if (streams.has(player.fullName)) {
+    <div class="playercam-container" [class.hidden]="match.roundPhase !== 'combat' || !player.isObserved">
+      <div class="playercam-main">
+        <svg class="playercam-bg">
+          <rect class="playercam-bg-rect" rx="0" ry="0" x="0" y="0" width="302" height="172"></rect>
+        </svg>
+        <div class="playercam-video">
+          <iframe
+            allow="camera;fullscreen;autoplay;"
+            [src]="streams.get(player.fullName)"
+            class="w-full h-full"
+          ></iframe>
+        </div>
+        <div class="playercam-team-logo">
+          <img 
+            [src]="match.teams[1].teamUrl || '../../../assets/misc/icon.webp'" 
+            [alt]="match.teams[1].teamName || 'Team Logo'"
+            class="team-logo-img"
+          />
+        </div>
+        <svg class="playercam-overlay">
+          <rect class="playercam-overlay-rect" rx="0" ry="0" x="0" y="0" width="294" height="34"></rect>
+        </svg>
+        <div class="playercam-name">
+          <span>{{ player.fullName | nameOverride: player.name : getOverrideNames() }}</span>
+        </div>
+        <svg class="playercam-accent" [class]="match.teams[1].isAttacking ? 'attacker' : 'defender'">
+          <rect class="playercam-accent-rect" rx="0" ry="0" x="0" y="0" width="4" height="34"></rect>
+        </svg>
+        <div class="playercam-kda">
+          <span>{{ player.kills }}/{{ player.deaths }}/{{ player.assists }}</span>
+        </div>
+      </div>
+    </div>
+  }
+}

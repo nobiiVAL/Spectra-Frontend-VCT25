@@ -3,6 +3,7 @@ import { AgentSelectComponent } from "../../agent-select/agent-select.component"
 
 @Component({
   selector: "app-agent-select-testing",
+  standalone: true,
   imports: [AgentSelectComponent],
   template: `
     <div class="testing-controls">
@@ -114,9 +115,38 @@ export class AgentSelectTestingComponent implements OnInit, AfterViewInit {
       ],
       spikeState: { planted: false },
       map: "Pearl",
-      tools: { seriesInfo: { needed: 3, wonLeft: 2, wonRight: 2, mapInfo: [] } }
+      tools: { 
+        seriesInfo: { needed: 3, wonLeft: 2, wonRight: 2, mapInfo: [] },
+        nameOverrides: {
+          overrides: new Map<string, string>([
+            // Team 1 - Mixed international overrides
+            ["TenZ", "田中太郎"],        // Japanese (Kanji + Hiragana)
+            ["Sick", "김민수"],           // Korean (Hangul)  
+            ["dapr", "张伟"],            // Chinese Simplified
+            ["ShahZaM", "ProGamer"],     // Simple English override
+            ["zombs", "ゾンビ"],         // Japanese Katakana
+            
+            // Team 2 - More diverse overrides
+            ["ScreaM", "SCREAMER"],      // Simple uppercase
+            ["nivera", "🎯 Sniper"],     // Emoji + text
+            ["Jamppi", "Ямппи"],        // Cyrillic (Russian)
+            ["soulcas", "सोल्कास"],      // Hindi/Devanagari
+            ["L1NK", "Player-1"]         // Hyphenated name
+          ])
+        }
+      }
     };
+    
+    // Fill agents and automatically apply comprehensive name overrides
     this.fillAllAgents();
+    
+    // Log the applied overrides for debugging
+    console.log("=== Agent Select Testing: Name Overrides Applied ===");
+    console.log("Original -> Override mappings:");
+    this.agentSelectComponent.match.tools.nameOverrides.overrides.forEach((override: string, original: string) => {
+      console.log(`  "${original}" -> "${override}"`);
+    });
+    console.log("==============================================");
   }
 
   teamPlayers(teamIndex: number) {
@@ -132,10 +162,12 @@ export class AgentSelectTestingComponent implements OnInit, AfterViewInit {
     const availableAgents = this.agentList.filter(a => !usedAgents.has(a));
     const agentInternal = availableAgents[0] || this.agentList[0];
 
+    const playerName = `Player ${teamIndex + 1}-${team.players.length + 1}`;
     const player = {
       playerId: Math.random().toString(36).substring(2),
       agentInternal,
-      name: `Player ${teamIndex + 1}-${team.players.length + 1}`,
+      name: playerName,
+      fullName: playerName,
       locked: true
     };
     team.players.push(player);
@@ -162,16 +194,24 @@ export class AgentSelectTestingComponent implements OnInit, AfterViewInit {
   }
 
   fillAllAgents() {
+    // Realistic player names for testing
+    const playerNames = [
+      "TenZ", "Sick", "dapr", "ShahZaM", "zombs", // Team 1
+      "ScreaM", "nivera", "Jamppi", "soulcas", "L1NK" // Team 2
+    ];
+    
     // Shuffle agents and assign 5 to each team
     const shuffled = [...this.agentList].sort(() => Math.random() - 0.5);
     for (let t = 0; t < 2; t++) {
       const team = this.agentSelectComponent.match.teams[t];
       team.players = [];
       for (let i = 0; i < 5; i++) {
+        const playerIndex = t * 5 + i;
         team.players.push({
           playerId: Math.random().toString(36).substring(2),
-          agentInternal: shuffled[t * 5 + i],
-          name: `Player ${t + 1}-${i + 1}`,
+          agentInternal: shuffled[playerIndex],
+          name: playerNames[playerIndex] || `Player ${t + 1}-${i + 1}`,
+          fullName: playerNames[playerIndex] || `Player ${t + 1}-${i + 1}`,
           locked: true
         });
       }

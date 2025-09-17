@@ -1,0 +1,19 @@
+.agent-select-v2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  
+  canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 1920px;
+    max-height: 1080px;
+  }
+}

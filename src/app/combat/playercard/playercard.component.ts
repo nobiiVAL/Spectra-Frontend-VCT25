@@ -2,10 +2,11 @@ import { trigger, transition, style, animate, group, keyframes } from "@angular/
 import { Component, Input } from "@angular/core";
 import { Config } from "../../shared/config";
 import { AgentNameService } from "../../services/agentName.service";
-import { CommonModule } from "@angular/common";
+import { CommonModule, NgIf, NgFor } from "@angular/common";
 import { AbilitiesComponent } from "../../abilities/abilities.component";
 import { ShieldIconComponent } from "./shield-icon/shield-icon.component";
 import { UltimateComponent } from "../../ultimate/ultimate.component";
+import { NameoverridePipe } from "../../pipes/nameoverride.pipe";
 
 const componentAnimations = [
   trigger("deathAnimation", [
@@ -105,10 +106,18 @@ const componentAnimations = [
 @Component({
   selector: "app-playercard",
   standalone: true,
-  imports: [CommonModule, AbilitiesComponent, ShieldIconComponent, UltimateComponent],
   templateUrl: "./playercard.component.html",
   styleUrls: ["./playercard.component.scss"],
   animations: componentAnimations,
+  imports: [
+    CommonModule,
+    NgIf,
+    NgFor,
+    AbilitiesComponent,
+    ShieldIconComponent,
+    UltimateComponent,
+    NameoverridePipe
+  ],
 })
 export class InhouseTrackerPlayercardComponent {
   public readonly assets: string = "../../../assets";
@@ -160,6 +169,14 @@ export class InhouseTrackerPlayercardComponent {
   clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
   }
+
+  getOverrideNames(): Map<string, string> {
+    let toReturn = this.match?.tools?.nameOverrides?.overrides;
+    if (!toReturn) {
+      toReturn = new Map<string, string>();
+    }
+    return toReturn;
+  }
 }
 
 @Component({
@@ -168,6 +185,6 @@ export class InhouseTrackerPlayercardComponent {
   templateUrl: "./playercard-minimal.component.html",
   styleUrls: ["./playercard.component.scss"],
   animations: componentAnimations,
-  imports: [CommonModule, UltimateComponent],
+  imports: [CommonModule, NgIf, NameoverridePipe],
 })
 export class InhouseTrackerPlayercardMinimalComponent extends InhouseTrackerPlayercardComponent {}

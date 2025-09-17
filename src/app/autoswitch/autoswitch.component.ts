@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { AgentSelectComponent } from "../agent-select/agent-select.component";
+import { AgentSelectRouterComponent } from "../agent-select/agent-select-router.component";
 import { OverlayComponent } from "../overlay/overlay.component";
 
 @Component({
@@ -7,6 +7,6 @@ import { OverlayComponent } from "../overlay/overlay.component";
   standalone: true,
   templateUrl: "./autoswitch.component.html",
   styleUrl: "./autoswitch.component.scss",
-  imports: [AgentSelectComponent, OverlayComponent],
+  imports: [AgentSelectRouterComponent, OverlayComponent],
 })
 export class AutoswitchComponent {}

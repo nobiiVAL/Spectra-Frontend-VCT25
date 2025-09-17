@@ -152,26 +152,30 @@ export class TopinfoComponent implements OnInit, OnDestroy, OnChanges {
 
     const pillMapData = this.mapInfoForSlot(slotIndex);
 
-    // Show decider only on maps labeled as 'future'
+    // Only future-type pills can be marked as decider
     if (pillMapData.type !== 'future') {
       return false;
     }
 
-    // Calculate series progression
-    const mapsPlayedCount = (seriesInfo.wonLeft || 0) + (seriesInfo.wonRight || 0);
     const maxMapsPossibleInSeries = (seriesInfo.needed * 2) - 1;
-
-    // The decider map is the last possible map in the series (0-indexed).
     const deciderMapOverallIndex = maxMapsPossibleInSeries - 1;
 
-    // The "future" pill displays the map that comes after the current map
-    // If 0 maps have been played, the current map is map 0 (0-indexed), and the future pill shows map 1 (0-indexed)
-    // If 1 map has been played, the current map is map 1 (0-indexed), and the future pill shows map 2 (0-indexed)
-    // So, the 0-indexed number of the map that this 'future' pill represents is mapsPlayedCount + 1
-    const overallIndexForTheMapInThisFuturePill = mapsPlayedCount + 1;
-    
-    // This pill represents the decider if the map it's set to display is the decider map of the series
-    return overallIndexForTheMapInThisFuturePill === deciderMapOverallIndex;
+    // New logic: a slot is the decider if it represents the last possible map.
+    // Slot index corresponds to overall map index in mapInfo ordering.
+    if (slotIndex === deciderMapOverallIndex) {
+      return true;
+    }
+
+    // Fallback / legacy support:
+    // If UI only renders a single rolling "future" slot (old behavior),
+    // keep prior next-map logic so it still activates when appropriate.
+    const mapsPlayedCount = (seriesInfo.wonLeft || 0) + (seriesInfo.wonRight || 0);
+    const legacyNextMapIndex = mapsPlayedCount + 1;
+    if (legacyNextMapIndex === deciderMapOverallIndex) {
+      return true;
+    }
+
+    return false;
   }
 
   // Assuming attribution cycle methods are defined as they were from previous context

@@ -69,6 +69,24 @@ export class EndroundComponent implements OnChanges, OnInit, AfterViewChecked {
     return 0xFF000000 | (r << 16) | (g << 8) | b;
   }
 
+  /**
+   * Validates and returns a team logo URL with robust fallback logic
+   */
+  private getValidTeamLogoUrl(team: any): string {
+    // Check if team exists and has a valid teamUrl
+    if (team && team.teamUrl) {
+      const url = team.teamUrl.trim();
+      // Check for non-empty string that's not just whitespace
+      if (url && url !== "" && url !== "null" && url !== "undefined") {
+        console.log(`✅ Using team logo: ${url}`);
+        return url;
+      }
+    }
+    
+    console.log(`⚠️ No valid team logo found, using default. Team data:`, team);
+    return "../../assets/misc/icon_endround.webp";
+  }
+
   constructor(private config: Config) {}
 
   ngOnInit(): void {
@@ -99,17 +117,49 @@ export class EndroundComponent implements OnChanges, OnInit, AfterViewChecked {
       if (match) {
         console.log("Match data:", match);
 
+        // Update tournament URLs whenever match data changes
+        const previousTournamentUrl = this.tournamentUrl;
+        const previousBackdropUrl = this.tournamentBackgroundUrl;
+        
+        this.tournamentUrl =
+          match?.tools?.tournamentInfo?.logoUrl && match.tools.tournamentInfo.logoUrl !== ""
+            ? match.tools.tournamentInfo.logoUrl
+            : "../../assets/misc/logo_endround.webp";
+
+        this.tournamentBackgroundUrl =
+          match?.tools?.tournamentInfo?.backdropUrl && match.tools.tournamentInfo.backdropUrl !== ""
+            ? match.tools.tournamentInfo.backdropUrl
+            : "../../assets/misc/backdrop.png";
+
+        // Clear cached assets if URLs changed
+        if (previousTournamentUrl !== this.tournamentUrl) {
+          console.log(`🔄 Tournament logo URL changed: ${previousTournamentUrl} -> ${this.tournamentUrl}`);
+          this.preloadedAssets.delete("tournamentLogo");
+        }
+        if (previousBackdropUrl !== this.tournamentBackgroundUrl) {
+          console.log(`🔄 Tournament backdrop URL changed: ${previousBackdropUrl} -> ${this.tournamentBackgroundUrl}`);
+          this.preloadedAssets.delete("tournamentBackdrop");
+        }
+
+        // Determine winning team first
         if (match.attackersWon) {
           this.teamWon = match.teams[0].isAttacking ? 0 : 1;
         } else {
           this.teamWon = match.teams[0].isAttacking ? 1 : 0;
         }
 
-        // Update the teamWonLogoUrl after teamWon is set
-        this.teamWonLogoUrl =
-          match.teams?.[this.teamWon]?.teamUrl && match.teams[this.teamWon].teamUrl !== ""
-            ? match.teams[this.teamWon].teamUrl
-            : "../../assets/misc/icon_endround.webp";
+        // Update the teamWonLogoUrl after teamWon is set with more robust validation
+        const winningTeam = match.teams?.[this.teamWon];
+        const previousTeamUrl = this.teamWonLogoUrl;
+        this.teamWonLogoUrl = this.getValidTeamLogoUrl(winningTeam);
+
+        console.log(`🏆 Team won: ${this.teamWon}, Team Logo URL: ${this.teamWonLogoUrl}, Tournament Logo URL: ${this.tournamentUrl}`);
+        
+        // Clear cached team logo if URL changed
+        if (previousTeamUrl !== this.teamWonLogoUrl) {
+          console.log(`🔄 Team logo URL changed: ${previousTeamUrl} -> ${this.teamWonLogoUrl}`);
+          this.preloadedAssets.delete("icon");
+        }
 
         // Reset assets if we're starting a new round (shopping phase indicates round start)
         if (match.roundPhase === "shopping" && this.previousRoundPhase !== "shopping") {
@@ -177,6 +227,35 @@ export class EndroundComponent implements OnChanges, OnInit, AfterViewChecked {
     }
 
     console.log("🚀 Starting asset preloading...");
+    
+    // Ensure we have the most current team logo URL before preloading
+    const currentWinningTeam = this.match?.teams?.[this.teamWon];
+    const refreshedTeamLogoUrl = this.getValidTeamLogoUrl(currentWinningTeam);
+    
+    if (refreshedTeamLogoUrl !== this.teamWonLogoUrl) {
+      console.log(`🔄 Team logo URL updated during preload: ${this.teamWonLogoUrl} -> ${refreshedTeamLogoUrl}`);
+      this.teamWonLogoUrl = refreshedTeamLogoUrl;
+    }
+    
+    // Ensure we have the most current tournament logo URL before preloading
+    const currentTournamentUrl = this.match?.tools?.tournamentInfo?.logoUrl && this.match.tools.tournamentInfo.logoUrl !== ""
+      ? this.match.tools.tournamentInfo.logoUrl
+      : "../../assets/misc/logo_endround.webp";
+    
+    if (currentTournamentUrl !== this.tournamentUrl) {
+      console.log(`🔄 Tournament logo URL updated during preload: ${this.tournamentUrl} -> ${currentTournamentUrl}`);
+      this.tournamentUrl = currentTournamentUrl;
+    }
+
+    // Ensure we have the most current backdrop URL before preloading
+    const currentBackdropUrl = this.match?.tools?.tournamentInfo?.backdropUrl && this.match.tools.tournamentInfo.backdropUrl !== ""
+      ? this.match.tools.tournamentInfo.backdropUrl
+      : "../../assets/misc/backdrop.png";
+    
+    if (currentBackdropUrl !== this.tournamentBackgroundUrl) {
+      console.log(`🔄 Tournament backdrop URL updated during preload: ${this.tournamentBackgroundUrl} -> ${currentBackdropUrl}`);
+      this.tournamentBackgroundUrl = currentBackdropUrl;
+    }
     
     try {
       // Preload all three assets in parallel
@@ -282,36 +361,81 @@ ctx.drawImage(
   };
 
   private tournamentLogoAsset = async (asset: ImageAsset) => {
-    // Use preloaded asset if available, otherwise load on demand
-    if (this.preloadedAssets.has("tournamentLogo")) {
-      console.log("📦 Using preloaded tournament logo asset");
-      const bytes = this.preloadedAssets.get("tournamentLogo")!;
-      asset.decode(bytes);
-    } else {
-      console.log("⏳ Loading tournament logo asset on demand");
-      const bytes = await this.resizeAndFetchImage(
-        this.tournamentUrl,
-        this.tournamentLogoWidth,
-        this.tournamentLogoHeight
-      );
-      asset.decode(bytes);
+    try {
+      // Always refresh the tournament logo URL to ensure we have the latest one
+      const currentTournamentUrl = this.match?.tools?.tournamentInfo?.logoUrl && this.match.tools.tournamentInfo.logoUrl !== ""
+        ? this.match.tools.tournamentInfo.logoUrl
+        : "../../assets/misc/logo_endround.webp";
+      
+      console.log(`🏆 Loading tournament logo asset - Current URL: ${currentTournamentUrl}`);
+      
+      // Use preloaded asset if available AND the URL matches
+      if (this.preloadedAssets.has("tournamentLogo") && currentTournamentUrl === this.tournamentUrl) {
+        console.log("📦 Using preloaded tournament logo asset");
+        const bytes = this.preloadedAssets.get("tournamentLogo")!;
+        asset.decode(bytes);
+      } else {
+        console.log("⏳ Loading tournament logo asset on demand (URL changed or not preloaded)");
+        // Update the stored URL and load fresh
+        this.tournamentUrl = currentTournamentUrl;
+        try {
+          const bytes = await this.resizeAndFetchImage(
+            this.tournamentUrl,
+            this.tournamentLogoWidth,
+            this.tournamentLogoHeight
+          );
+          asset.decode(bytes);
+          
+          // Update the preloaded cache with the new asset
+          this.preloadedAssets.set("tournamentLogo", bytes);
+        } catch (error) {
+          console.error(`❌ Failed to load tournament logo from ${this.tournamentUrl}, using default:`, error);
+          // Fallback to default logo if custom logo fails
+          const defaultTournamentUrl = "../../assets/misc/logo_endround.webp";
+          try {
+            const defaultBytes = await this.resizeAndFetchImage(
+              defaultTournamentUrl,
+              this.tournamentLogoWidth,
+              this.tournamentLogoHeight
+            );
+            asset.decode(defaultBytes);
+          } catch (fallbackError) {
+            console.error(`❌ Even default tournament logo failed to load:`, fallbackError);
+            // If all fails, don't call decode - let Rive handle it
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Critical error in tournamentLogoAsset:`, error);
+      // Don't throw errors that could break the Rive animation
     }
   };
 
   private teamLogoAsset = async (asset: ImageAsset) => {
-    // Use preloaded asset if available, otherwise load on demand
-    if (this.preloadedAssets.has("icon")) {
+    // Always refresh the team logo URL to ensure we have the latest one
+    const currentWinningTeam = this.match?.teams?.[this.teamWon];
+    const currentTeamLogoUrl = this.getValidTeamLogoUrl(currentWinningTeam);
+    
+    console.log(`🎯 Loading team logo asset - Current URL: ${currentTeamLogoUrl}`);
+    
+    // Use preloaded asset if available AND the URL matches
+    if (this.preloadedAssets.has("icon") && currentTeamLogoUrl === this.teamWonLogoUrl) {
       console.log("📦 Using preloaded team logo asset");
       const bytes = this.preloadedAssets.get("icon")!;
       asset.decode(bytes);
     } else {
-      console.log("⏳ Loading team logo asset on demand");
+      console.log("⏳ Loading team logo asset on demand (URL changed or not preloaded)");
+      // Update the stored URL and load fresh
+      this.teamWonLogoUrl = currentTeamLogoUrl;
       const bytes = await this.resizeAndFetchImage(
         this.teamWonLogoUrl,
         this.teamWonLogoWidth,
         this.teamWonLogoHeight
       );
       asset.decode(bytes);
+      
+      // Update the preloaded cache with the new asset
+      this.preloadedAssets.set("icon", bytes);
     }
   };
 

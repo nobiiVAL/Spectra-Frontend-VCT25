@@ -24,8 +24,8 @@ import { AgentRoleService } from "../services/agentRole.service";
 // Helper functions for CJK character detection
 // Hiragana and Katakana (Japanese specific scripts)
 const JAPANESE_KANA_REGEX = /[\u3040-\u30ff\uFF66-\uFF9F]/;
-// Hangul (Korean specific script)
-const KOREAN_HANGUL_REGEX = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/;
+// Hangul (Korean specific script) - Updated to include more comprehensive range
+const KOREAN_HANGUL_REGEX = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]/;
 // CJK Unified Ideographs (covers Chinese Hanzi, Japanese Kanji)
 const CJK_IDEOGRAPHS_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/;
 
@@ -342,7 +342,47 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log("Match data updated, Rive not yet initialized. Will use new data on init.");
     }
   }
-  
+
+  private getPlayerDisplayName(player: any): string {
+    if (!player) return "";
+    
+    const nameOverrides = this.match?.tools?.nameOverrides?.overrides;
+    if (nameOverrides && typeof nameOverrides.get === "function") {
+      // Check for override using fullName first, then fall back to name
+      const overriddenName = nameOverrides.get(player.fullName || player.name);
+      if (overriddenName) {
+        console.log(`Name override applied: "${player.fullName || player.name}" -> "${overriddenName}"`);
+        return overriddenName.toUpperCase();
+      }
+    }
+    
+    // Fall back to original name if no override found
+    return (player.name || "").toUpperCase();
+  }
+
+  private getPlayerDisplayNameForFontDetection(player: any): string {
+    if (!player) return "";
+    
+    const nameOverrides = this.match?.tools?.nameOverrides?.overrides;
+    if (nameOverrides && typeof nameOverrides.get === "function") {
+      // Check for override using fullName first, then fall back to name
+      const overriddenName = nameOverrides.get(player.fullName || player.name);
+      if (overriddenName) {
+        console.log(`🔤 Font detection using override: "${player.fullName || player.name}" -> "${overriddenName}"`);
+        
+        // Special Korean character test
+        if (overriddenName.includes("김") || KOREAN_HANGUL_REGEX.test(overriddenName)) {
+          console.log(`🇰🇷 Korean characters detected in override: "${overriddenName}"`);
+        }
+        
+        return overriddenName; // Return without uppercase for font detection
+      }
+    }
+    
+    // Fall back to original name if no override found
+    return player.name || "";
+  }
+
   private updateRiveTextsAndInputs(): void {
     if (!this.riveInstance || !this.match) {
       console.log("updateRiveTextsAndInputs: Skipping, Rive instance or match data not available.");
@@ -392,11 +432,11 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
     const rightPlayers = this.match.teams[1].players;
     for (let i = 0; i < 5; i++) {
       const leftPlayer = leftPlayers[i];
-      this.riveInstance.setTextRunValue(`L${i + 1}Name`, leftPlayer ? leftPlayer.name.toUpperCase() : "");
+      this.riveInstance.setTextRunValue(`L${i + 1}Name`, this.getPlayerDisplayName(leftPlayer));
       this.riveInstance.setTextRunValue(`L${i + 1}Agent`, leftPlayer ? AgentNameService.getAgentName(leftPlayer.agentInternal)?.toUpperCase() || "" : "");
 
       const rightPlayer = rightPlayers[i];
-      this.riveInstance.setTextRunValue(`R${i + 1}Name`, rightPlayer ? rightPlayer.name.toUpperCase() : "");
+      this.riveInstance.setTextRunValue(`R${i + 1}Name`, this.getPlayerDisplayName(rightPlayer));
       this.riveInstance.setTextRunValue(`R${i + 1}Agent`, rightPlayer ? AgentNameService.getAgentName(rightPlayer.agentInternal)?.toUpperCase() || "" : "");
     }
   }
@@ -414,7 +454,7 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
     // Pre-populate expected assets based on current match data
     this.populateExpectedAssets();
 
-    // Determine the best font for "Noto Sans Mono" based on player names
+    // Determine the best font for "Noto Sans Mono" based on player names (including overrides)
     let finalFontUrlForNotoSansMono = "/assets/fonts/NotoSansMono/NotoSansMono-Bold.ttf"; // Default
     const playerNames: string[] = [];
 
@@ -423,7 +463,11 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
         if (team.players) {
           team.players.forEach((player: any) => {
             if (player && player.name && typeof player.name === 'string') {
-              playerNames.push(player.name);
+              // Get the display name (which includes override logic)
+              const displayName = this.getPlayerDisplayName(player);
+              // Remove .toUpperCase() call since we want original casing for font detection
+              const nameForFontDetection = this.getPlayerDisplayNameForFontDetection(player);
+              playerNames.push(nameForFontDetection);
             }
           });
         }
@@ -435,30 +479,45 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
     let hasIdeographChars = false;
 
     for (const name of playerNames) {
+      console.log(`Checking font for name: "${name}"`);
+      
+      // Test Korean detection specifically for debugging
+      if (name === "김민수" || name.includes("김")) {
+        console.log(`🇰🇷 Testing Korean detection for: "${name}"`);
+        console.log(`  - Character codes: ${Array.from(name).map(c => c.charCodeAt(0).toString(16)).join(', ')}`);
+        console.log(`  - Korean regex test result: ${KOREAN_HANGUL_REGEX.test(name)}`);
+      }
+      
       if (JAPANESE_KANA_REGEX.test(name)) {
         hasJapaneseKanaChars = true;
+        console.log(`  → Japanese Kana characters detected in: "${name}"`);
       }
       if (KOREAN_HANGUL_REGEX.test(name)) {
         hasKoreanHangulChars = true;
+        console.log(`  → Korean Hangul characters detected in: "${name}"`);
       }
       if (CJK_IDEOGRAPHS_REGEX.test(name)) {
         hasIdeographChars = true;
+        console.log(`  → CJK Ideograph characters detected in: "${name}"`);
       }
     }
 
+    console.log(`Font selection summary: Japanese=${hasJapaneseKanaChars}, Korean=${hasKoreanHangulChars}, CJK=${hasIdeographChars}`);
+
     // Priority: Japanese (Kana) > Korean (Hangul) > CJK Ideographs (Chinese/Kanji) > Default Latin Mono.
-    // This uses BOLD CJK fonts from your assets.
-    // WARNING: As mentioned, NotoSansJP-Bold, NotoSansKR-Bold, NotoSansSC-Bold are PROPORTIONAL.
-    // If Rive's "Noto Sans Mono" text elements require a MONOSPACED font, this may affect layout.
-    // Consider acquiring monospaced CJK fonts.
     if (hasJapaneseKanaChars) {
       finalFontUrlForNotoSansMono = "/assets/fonts/NotoSansMono/NotoSansJP-Bold.ttf";
+      console.log("✅ Selected Japanese font: NotoSansJP-Bold.ttf");
     } else if (hasKoreanHangulChars) {
       finalFontUrlForNotoSansMono = "/assets/fonts/NotoSansMono/NotoSansKR-Bold.ttf";
+      console.log("✅ Selected Korean font: NotoSansKR-Bold.ttf");
+      console.log(`🔗 Full Korean font URL: ${finalFontUrlForNotoSansMono}`);
     } else if (hasIdeographChars) { // Catches Chinese characters or Japanese Kanji if no specific Kana/Hangul
       finalFontUrlForNotoSansMono = "/assets/fonts/NotoSansMono/NotoSansSC-Bold.ttf"; // Using SC as a general ideograph fallback
+      console.log("✅ Selected Chinese font: NotoSansSC-Bold.ttf");
+    } else {
+      console.log("✅ Using default Latin font: NotoSansMono-Bold.ttf");
     }
-    // If no CJK characters are detected by the above, it remains the default NotoSansMono-Bold.ttf
 
     const container = document.querySelector(".agent-select-animation");
     if (!container) {
@@ -571,9 +630,22 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
           let fontUrlToLoad = ""; 
           // Check if this is the font asset designated for player names.
           // The Rive file asset name appears to be "Noto Sans Mono" (with spaces).
-          if (asset.name.toLowerCase().includes("noto sans mono")) { // Corrected this line
+          if (asset.name.toLowerCase().includes("noto sans mono")) {
             fontUrlToLoad = finalFontUrlForNotoSansMono; // Use the dynamically determined font URL
             console.log(`AssetLoader: Using font '${fontUrlToLoad}' for Rive font asset '${asset.name}'.`);
+          }
+          // Handle specific CJK font assets
+          else if (asset.name.toLowerCase().includes("noto sans kr")) {
+            fontUrlToLoad = "/assets/fonts/NotoSansMono/NotoSansKR-Bold.ttf";
+            console.log(`AssetLoader: Using Korean font '${fontUrlToLoad}' for Rive font asset '${asset.name}'.`);
+          }
+          else if (asset.name.toLowerCase().includes("noto sans jp")) {
+            fontUrlToLoad = "/assets/fonts/NotoSansMono/NotoSansJP-Bold.ttf";
+            console.log(`AssetLoader: Using Japanese font '${fontUrlToLoad}' for Rive font asset '${asset.name}'.`);
+          }
+          else if (asset.name.toLowerCase().includes("noto sans sc")) {
+            fontUrlToLoad = "/assets/fonts/NotoSansMono/NotoSansSC-Bold.ttf";
+            console.log(`AssetLoader: Using Chinese font '${fontUrlToLoad}' for Rive font asset '${asset.name}'.`);
           }
           // You can add 'else if' blocks here to handle other specific font assets from your Rive file
           // else if (asset.name.toLowerCase().includes("someotherfontname")) {
@@ -582,17 +654,44 @@ export class AgentSelectComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (fontUrlToLoad) {
             try {
+              console.log(`🔤 Attempting to fetch font: ${fontUrlToLoad}`);
               const response = await fetch(fontUrlToLoad);
               if (!response.ok) {
-                console.error(`Font fetch failed for Rive asset '${asset.name}' from '${fontUrlToLoad}': ${response.status}`);
+                console.error(`❌ Font fetch failed for Rive asset '${asset.name}' from '${fontUrlToLoad}': ${response.status}`);
+                
+                // If Bold font fails, try Regular version for Korean, Japanese, or Chinese
+                let fallbackUrl = "";
+                if (fontUrlToLoad.includes("NotoSansKR-Bold.ttf")) {
+                  fallbackUrl = "/assets/fonts/NotoSansMono/NotoSansKR-Regular.ttf";
+                } else if (fontUrlToLoad.includes("NotoSansJP-Bold.ttf")) {
+                  fallbackUrl = "/assets/fonts/NotoSansMono/NotoSansJP-Regular.ttf";
+                } else if (fontUrlToLoad.includes("NotoSansSC-Bold.ttf")) {
+                  fallbackUrl = "/assets/fonts/NotoSansMono/NotoSansSC-Regular.ttf";
+                }
+                
+                if (fallbackUrl) {
+                  console.log(`🔄 Trying Regular font as fallback: ${fallbackUrl}`);
+                  const fallbackResponse = await fetch(fallbackUrl);
+                  if (!fallbackResponse.ok) {
+                    console.error(`❌ Regular font fallback also failed: ${fallbackResponse.status}`);
+                    return false;
+                  }
+                  console.log("✅ Regular font fallback successful");
+                  const fontBuffer = await fallbackResponse.arrayBuffer();
+                  (asset as FontAsset).decode(new Uint8Array(fontBuffer));
+                  this.markAssetAsLoaded(asset.name);
+                  return true;
+                }
                 return false; 
               }
+              console.log("✅ Font fetch successful, decoding...");
               const fontBuffer = await response.arrayBuffer();
               (asset as FontAsset).decode(new Uint8Array(fontBuffer));
               this.markAssetAsLoaded(asset.name);
+              console.log(`✅ Font successfully loaded and decoded: ${fontUrlToLoad}`);
               return true;
             } catch (e) {
-              console.error(`Failed to load or decode font for Rive asset '${asset.name}' from '${fontUrlToLoad}'`, e);
+              console.error(`❌ Failed to load or decode font for Rive asset '${asset.name}' from '${fontUrlToLoad}'`, e);
               return false;
             }
           }
