@@ -1,0 +1,119 @@
+<div class="testing-container">
+  <!-- Control Panel -->
+  <div class="testing-controls">
+    <div class="control-section">
+      <h3>Global Controls</h3>
+      <button class="dark-btn" (click)="randomizeAllAgents()">Randomize All Agents</button>
+      <button class="dark-btn" (click)="lockAllPlayers()">Lock All Players</button>
+      <button class="dark-btn" (click)="unlockAllPlayers()">Unlock All Players</button>
+      <button class="dark-btn info-btn" (click)="logCurrentAgents()">Log Current Agents</button>
+      <button class="dark-btn info-btn" (click)="logRoleDistribution()">Log Role Distribution</button>
+      <button class="dark-btn info-btn" (click)="logNameMappings()">Log Name Mappings</button>
+    </div>
+
+    <!-- Timer Controls -->
+    <div class="control-section">
+      <h3>Timer Controls</h3>
+      <div class="timer-controls">
+        <button 
+          class="dark-btn timer-btn" 
+          [class.active]="isTimerActive"
+          (click)="startTimer()"
+          [disabled]="isTimerActive"
+        >
+          {{ isTimerActive ? 'Timer Active' : 'Start Timer' }}
+        </button>
+        <button 
+          class="dark-btn timer-btn" 
+          (click)="stopTimer()"
+          [disabled]="!isTimerActive"
+        >
+          Stop Timer
+        </button>
+        <button 
+          class="dark-btn timer-btn" 
+          (click)="resetTimer()"
+        >
+          Reset Timer
+        </button>
+        <button 
+          class="dark-btn timer-btn" 
+          (click)="testSmoothCountdown()"
+        >
+          Test Smooth Countdown
+        </button>
+      </div>
+      <div class="timer-presets" *ngIf="isTimerActive">
+        <span class="preset-label">Quick Set:</span>
+        <button class="preset-btn" (click)="setTimerTo(90)">90s</button>
+        <button class="preset-btn" (click)="setTimerTo(60)">60s</button>
+        <button class="preset-btn" (click)="setTimerTo(30)">30s</button>
+        <button class="preset-btn" (click)="setTimerTo(10)">10s</button>
+        <button class="preset-btn" (click)="setTimerTo(5)">5s</button>
+      </div>
+    </div>
+    
+    <!-- Team 1 Controls -->
+    <div class="control-section">
+      <h3>Team Alpha (Players 1-5)</h3>
+      <div class="player-controls">
+        <div class="player-control" *ngFor="let player of getTeamPlayers(0)">
+          <div class="player-info">
+            <span class="player-name">{{ player.name }}</span>
+            <label class="lock-control">
+              <input 
+                type="checkbox" 
+                [checked]="player.locked"
+                (change)="onLockStateChange(player.id, $event)"
+              />
+              <span class="lock-label">{{ player.locked ? 'Locked' : 'Unlocked' }}</span>
+            </label>
+          </div>
+          <select 
+            class="agent-select"
+            [value]="player.selectedAgent"
+            (change)="onAgentSelectChange(player.id, $event)"
+          >
+            <option *ngFor="let agent of agentList" [value]="agent">
+              {{ agent }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team 2 Controls -->
+    <div class="control-section">
+      <h3>Team Beta (Players 6-10)</h3>
+      <div class="player-controls">
+        <div class="player-control" *ngFor="let player of getTeamPlayers(1)">
+          <div class="player-info">
+            <span class="player-name">{{ player.name }}</span>
+            <label class="lock-control">
+              <input 
+                type="checkbox" 
+                [checked]="player.locked"
+                (change)="onLockStateChange(player.id, $event)"
+              />
+              <span class="lock-label">{{ player.locked ? 'Locked' : 'Unlocked' }}</span>
+            </label>
+          </div>
+          <select 
+            class="agent-select"
+            [value]="player.selectedAgent"
+            (change)="onAgentSelectChange(player.id, $event)"
+          >
+            <option *ngFor="let agent of agentList" [value]="agent">
+              {{ agent }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent Select V2 Component -->
+  <div class="agent-select-animation">
+    <app-agent-select-v2></app-agent-select-v2>
+  </div>
+</div>

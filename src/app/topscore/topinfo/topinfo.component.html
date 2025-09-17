@@ -45,7 +45,7 @@
       <span *ngIf="!displayAttributionContent" class="event-name-text-cycling" @fadeCycle>{{ customText }}</span>
       <div *ngIf="displayAttributionContent" class="attribution-content-cycling" @fadeCycle>
         <img src="assets/misc/icon.webp" class="attribution-icon" alt="Spectra Icon">
-        <span class="attribution-text-part">OVERLAY BY SPECTRA</span>
+        <span class="attribution-text-part">POWERED BY SPECTRA</span>
       </div>
     </ng-container>
 
@@ -57,7 +57,7 @@
       <!-- Only show Spectra attribution if custom text is NOT enabled -->
       <div *ngIf="!showCustomText && showSpectraWatermark" class="attribution-content-static">
         <img src="assets/misc/icon.webp" class="attribution-icon" alt="Spectra Icon">
-        <span class="attribution-text-part">OVERLAY BY SPECTRA</span>
+        <span class="attribution-text-part">POWERED BY SPECTRA</span>
       </div>
     </ng-container>
   </div>

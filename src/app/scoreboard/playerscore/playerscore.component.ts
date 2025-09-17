@@ -4,13 +4,14 @@ import { AgentRoleService } from "../../services/agentRole.service";
 import { NgIf, NgFor, NgStyle } from "@angular/common";
 import { AbilitiesComponent } from "../../abilities/abilities.component";
 import { UltimateComponent } from "../../ultimate/ultimate.component";
+import { NameoverridePipe } from "../../pipes/nameoverride.pipe";
 
 @Component({
   selector: "app-playerscore",
   standalone: true,
   templateUrl: "./playerscore.component.html",
   styleUrls: ["./playerscore.component.scss"],
-  imports: [NgIf, NgFor, AbilitiesComponent, NgStyle, UltimateComponent],
+  imports: [NgIf, NgFor, AbilitiesComponent, NgStyle, UltimateComponent, NameoverridePipe],
 })
 export class PlayerscoreComponent {
   public readonly assets: string = "../../../assets";
@@ -38,6 +39,14 @@ export class PlayerscoreComponent {
     return AgentRoleService.getAgentRole(agent);
   }
 
+  getOverrideNames(): Map<string, string> {
+    let toReturn = this.match?.tools?.nameOverrides?.overrides;
+    if (!toReturn) {
+      toReturn = new Map<string, string>();
+    }
+    return toReturn;
+  }
+
   get showAuxScoreboard(): boolean {
     // Returns true if at least one player has auxiliary abilities and hideAuxiliary is false
     return (
@@ -54,6 +63,6 @@ export class PlayerscoreComponent {
   selector: "app-playerscore-minimal",
   templateUrl: "./playerscore-minimal.component.html",
   styleUrls: ["./playerscore.component.scss"],
-  imports: [NgIf],
+  imports: [NgIf, NameoverridePipe],
 })
 export class PlayerscoreMinimalComponent extends PlayerscoreComponent {}

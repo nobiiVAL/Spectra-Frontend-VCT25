@@ -1,0 +1,169 @@
+@font-face {
+  font-family: DIN Next W1G;
+  src: url("../../../public/assets/fonts/DINNextW1G/dinnextw1g.otf") format("opentype");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+}
+
+.playercam-container {
+  position: absolute;
+  left: 476px;
+  bottom: 150px;
+  width: 302px;
+  height: 172px;
+  background-color: rgba(255, 255, 255, 1);
+  overflow: hidden;
+}
+
+.playercam-main {
+  position: absolute;
+  width: 302px;
+  height: 172px;
+  left: 0px;
+  top: 0px;
+  overflow: hidden;
+}
+
+.playercam-bg-rect {
+  fill: rgba(32, 32, 32, 1);
+  stroke: rgba(0, 0, 0, 1);
+  stroke-width: 2px;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+  stroke-miterlimit: 4;
+  shape-rendering: auto;
+}
+
+.playercam-bg {
+  position: absolute;
+  overflow: visible;
+  width: 302px;
+  height: 172px;
+  left: 0px;
+  top: 0px;
+}
+
+.playercam-video {
+  position: absolute;
+  width: 298px;
+  height: 168px;
+  scale: 1.11;
+  right: 19px;
+  top: 3px;
+  overflow: hidden;
+  z-index: 2;
+  transform-origin: top left;
+}
+
+.playercam-team-logo {
+  position: absolute;
+  width: 298px;
+  height: 134px;
+  left: 2px;
+  top: 2px;
+  scale: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  background-color: rgba(32, 32, 32, 0.8);
+}
+
+.team-logo-img {
+  max-width: 120px;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.7;
+  filter: brightness(0.9);
+}
+
+.playercam-overlay-rect {
+  fill: rgba(255, 255, 255, 0.18);
+}
+
+.playercam-overlay {
+  position: absolute;
+  overflow: visible;
+  width: 294px;
+  height: 34px;
+  left: 6px;
+  top: 136px;
+  z-index: 3;
+}
+
+.playercam-name {
+  border: 0;
+  left: 15px;
+  top: 143px;
+  position: absolute;
+  overflow: visible;
+  width: 200px;
+  white-space: nowrap;
+  text-align: left;
+  font-family: DIN Next W1G, Helvetica;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  letter-spacing: 0.4px;
+  text-overflow: ellipsis;
+  z-index: 5;
+}
+
+.playercam-accent-rect {
+  &.attacker {
+    fill: rgba(var(--attacker-color-rgb), 1);
+  }
+  
+  &.defender {
+    fill: rgba(var(--defender-color-rgb), 1);
+  }
+}
+
+.playercam-accent {
+  position: absolute;
+  overflow: visible;
+  width: 4px;
+  height: 34px;
+  left: 2px;
+  top: 136px;
+  z-index: 4;
+
+  &.attacker .playercam-accent-rect {
+    fill: rgba(var(--attacker-color-rgb), 1);
+  }
+  
+  &.defender .playercam-accent-rect {
+    fill: rgba(var(--defender-color-rgb), 1);
+  }
+}
+
+.playercam-kda {
+  border: 0;
+  right: 15px;
+  top: 143px;
+  position: absolute;
+  overflow: visible;
+  width: 80px;
+  white-space: nowrap;
+  text-align: right;
+  font-family: DIN Next W1G, Helvetica;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  letter-spacing: 0.4px;
+  text-overflow: ellipsis;
+  z-index: 5;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,0 +1,275 @@
+.testing-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.testing-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 100;
+  background: rgba(34, 34, 34, 0.95);
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+  border-bottom: 2px solid #444;
+  backdrop-filter: blur(5px);
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.control-section {
+  min-width: 250px;
+  
+  h3 {
+    margin: 0 0 12px 0;
+    color: #fff;
+    font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+.dark-btn {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 4px 4px 8px 0;
+  font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #444;
+    border-color: #666;
+  }
+  
+  &:active {
+    background: #222;
+  }
+  
+  &:disabled {
+    background: #444;
+    color: #bbb;
+    cursor: not-allowed;
+    border-color: #333;
+  }
+  
+  &.info-btn {
+    background: #1e3a8a;
+    border-color: #3b82f6;
+    
+    &:hover {
+      background: #2563eb;
+      border-color: #60a5fa;
+    }
+    
+    &:active {
+      background: #1e40af;
+    }
+  }
+  
+  &.timer-btn {
+    &.active {
+      background: #16a34a;
+      border-color: #22c55e;
+      
+      &:hover {
+        background: #15803d;
+        border-color: #16a34a;
+      }
+    }
+  }
+}
+
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.timer-presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  
+  .preset-label {
+    color: #ccc;
+    font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  
+  .preset-btn {
+    background: #4a5568;
+    color: #fff;
+    border: 1px solid #718096;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #2d3748;
+      border-color: #4a5568;
+    }
+    
+    &:active {
+      background: #1a202c;
+    }
+  }
+}
+
+.player-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #555;
+  }
+}
+
+.player-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .player-name {
+    color: #fff;
+    font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.lock-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 11px;
+  font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+  
+  input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+    accent-color: #4CAF50;
+  }
+  
+  .lock-label {
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  &:hover .lock-label {
+    color: #fff;
+  }
+}
+
+.agent-select {
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #333;
+    border-color: #666;
+  }
+  
+  &:focus {
+    outline: none;
+    background: #333;
+    border-color: #777;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+  
+  option {
+    background: #2a2a2a;
+    color: #fff;
+    padding: 4px 8px;
+  }
+}
+
+.agent-select-animation {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 40vh; // Account for controls height
+  
+  app-agent-select-v2 {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .testing-controls {
+    flex-direction: column;
+    max-height: 50vh;
+  }
+  
+  .control-section {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .agent-select-animation {
+    padding-top: 50vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .testing-controls {
+    padding: 8px;
+    gap: 16px;
+  }
+  
+  .player-controls {
+    gap: 6px;
+  }
+  
+  .player-control {
+    padding: 6px 8px;
+  }
+}
