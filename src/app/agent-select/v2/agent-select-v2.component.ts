@@ -1939,10 +1939,10 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         if (team1MapProperty) {
           if (mapIndex <= mapsWonLeft) {
             team1MapProperty.value = opaqueWhite; // 100% opacity for won maps
-            this.log(`✅ Set team1Map${mapIndex} to 100% opacity (won)`);
+            this.log(`Set team1Map${mapIndex} to 100% opacity (won)`);
           } else {
             team1MapProperty.value = transparentWhite; // 0% opacity for unwon maps
-            this.log(`🔄 Set team1Map${mapIndex} to 0% opacity (not won)`);
+            this.log(`Set team1Map${mapIndex} to 0% opacity (not won)`);
           }
         } else {
           console.warn(`team1Map${mapIndex} color property not found`);
@@ -1953,10 +1953,10 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         if (team2MapProperty) {
           if (mapIndex <= mapsWonRight) {
             team2MapProperty.value = opaqueWhite; // 100% opacity for won maps
-            this.log(`✅ Set team2Map${mapIndex} to 100% opacity (won)`);
+            this.log(`Set team2Map${mapIndex} to 100% opacity (won)`);
           } else {
             team2MapProperty.value = transparentWhite; // 0% opacity for unwon maps
-            this.log(`🔄 Set team2Map${mapIndex} to 0% opacity (not won)`);
+            this.log(`Set team2Map${mapIndex} to 0% opacity (not won)`);
           }
         } else {
           console.warn(`team2Map${mapIndex} color property not found`);
@@ -2030,7 +2030,7 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
       }
       
     } catch (error) {
-      console.error(`❌ Error updating Player ${playerIndex} locked state:`, error);
+      console.error(`Error updating Player ${playerIndex} locked state:`, error);
     }
   }
 
@@ -2056,11 +2056,11 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         // when the boolean property changes, but we can trigger a frame update
         (this.riveInstance as any).renderer?.save();
         (this.riveInstance as any).renderer?.restore();
-        this.log(`✅ Render frame triggered for Player ${playerIndex} locked state visual update`);
+        this.log(`Render frame triggered for Player ${playerIndex} locked state visual update`);
       }
       
     } catch (error) {
-      console.error(`❌ Error triggering render update for Player ${playerIndex}:`, error);
+      console.error(`Error triggering render update for Player ${playerIndex}:`, error);
     }
   }
 
