@@ -11,6 +11,23 @@
       <button class="dark-btn info-btn" (click)="logNameMappings()">Log Name Mappings</button>
     </div>
 
+    <!-- Map Controls -->
+    <div class="control-section">
+      <h3>Map Selection</h3>
+      <div class="map-controls">
+        <label class="map-label">Current Map:</label>
+        <select 
+          class="map-select"
+          [value]="getCurrentMap()"
+          (change)="onMapChange($event)"
+        >
+          <option *ngFor="let map of mapList" [value]="map">
+            {{ map }}
+          </option>
+        </select>
+      </div>
+    </div>
+
     <!-- Timer Controls -->
     <div class="control-section">
       <h3>Timer Controls</h3>

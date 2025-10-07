@@ -227,6 +227,54 @@
   }
 }
 
+.map-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .map-label {
+    color: #ccc;
+    font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
+  }
+  
+  .map-select {
+    background: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    
+    &:hover {
+      background: #333;
+      border-color: #666;
+    }
+    
+    &:focus {
+      outline: none;
+      background: #333;
+      border-color: #777;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+    
+    option {
+      background: #2a2a2a;
+      color: #fff;
+      padding: 6px 12px;
+    }
+  }
+}
+
 .agent-select-animation {
   width: 100vw;
   height: 100vh;

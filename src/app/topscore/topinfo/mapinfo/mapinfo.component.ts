@@ -12,7 +12,7 @@ export class MapinfoComponent implements OnChanges {
   @Input() mapinfo!: any;
   @Input() isDecider!: boolean;
   @Input() slotType!: 'past' | 'present' | 'future';
-  type: "past" | "present" | "future" = "future";
+  type: "past" | "present" | "future" | "disabled" = "future";
 
   ngOnChanges(): void {
     this.type = this.mapinfo.type;
