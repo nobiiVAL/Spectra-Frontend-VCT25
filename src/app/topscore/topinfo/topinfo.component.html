@@ -7,13 +7,13 @@
     [slotType]="'past'"
     [isDecider]="isDeciderForSlot(0)">
   </app-mapinfo>
-  <app-mapinfo *ngIf="mapInfoForSlot(1).type !== 'disabled'"
+  <app-mapinfo
     [map]="match.map"
     [mapinfo]="mapInfoForSlot(1)"
     [slotType]="'present'"
     [isDecider]="isDeciderForSlot(1)">
   </app-mapinfo>
-  <app-mapinfo *ngIf="mapInfoForSlot(2).type !== 'disabled'"
+  <app-mapinfo
     [map]="match.map"
     [mapinfo]="mapInfoForSlot(2)"
     [slotType]="'future'"

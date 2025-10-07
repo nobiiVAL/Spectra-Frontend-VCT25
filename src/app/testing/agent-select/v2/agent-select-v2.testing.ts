@@ -23,6 +23,11 @@ export class AgentSelectV2TestingComponent implements OnInit, AfterViewInit {
     "Wraith", "Wushu"
   ];
 
+  readonly mapList = [
+    "Abyss", "Ascent", "Bind", "Breeze", "Corrode", "Fracture", 
+    "Haven", "Icebox", "Lotus", "Pearl", "Split", "Sunset"
+  ];
+
   // Player controls
   players: Array<{
     id: number;
@@ -155,6 +160,22 @@ export class AgentSelectV2TestingComponent implements OnInit, AfterViewInit {
       console.log(`🎯 Player ${player.id} selected: ${oldAgent} → ${select.value}`);
       this.applyPlayersToMatch();
     }
+  }
+
+  onMapChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const newMap = select.value;
+    
+    if (this.agentSelectComponent?.match) {
+      const oldMap = this.agentSelectComponent.match.map;
+      this.agentSelectComponent.match.map = newMap;
+      this.agentSelectComponent.updateMatch(this.agentSelectComponent.match);
+      console.log(`🗺️ Map changed: ${oldMap} → ${newMap}`);
+    }
+  }
+
+  getCurrentMap(): string {
+    return this.agentSelectComponent?.match?.map || "Corrode";
   }
 
   private applyPlayersToMatch(): void {

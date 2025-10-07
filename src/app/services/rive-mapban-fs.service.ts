@@ -112,7 +112,7 @@ export class RiveMapbanFsService {
       console.log(`🔧 STARTING resize for team logo: ${imageData.length} bytes → target ${targetWidth}x${targetHeight}`);
       
       // Create a blob from the image data
-      const imageBlob = new Blob([imageData]);
+      const imageBlob = new Blob([new Uint8Array(imageData)]);
       console.log(`📦 Created blob: ${imageBlob.size} bytes, type: ${imageBlob.type}`);
       
       // Create ImageBitmap from blob

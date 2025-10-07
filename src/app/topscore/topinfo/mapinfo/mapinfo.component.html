@@ -1,21 +1,23 @@
 <div class="container">
   <div class="pill-bg">
+    <!-- Only show SVG background images when not disabled -->
     <img
-      *ngIf="slotType === 'past'"
+      *ngIf="slotType === 'past' && mapinfo.type !== 'disabled'"
       class="pill-bg-svg past"
       src="/assets/topscore/mapinfo/pastMap_pill.svg"
     />
     <img
-      *ngIf="slotType === 'present'"
+      *ngIf="slotType === 'present' && mapinfo.type !== 'disabled'"
       class="pill-bg-svg present"
       src="/assets/topscore/mapinfo/currentMap_pill.svg"
     />
     <img
-      *ngIf="slotType === 'future'"
+      *ngIf="slotType === 'future' && mapinfo.type !== 'disabled'"
       class="pill-bg-svg future"
       src="/assets/topscore/mapinfo/futureMap_pill.svg"
     />
-    <div class="pill-content">
+    <!-- Only show content when not disabled -->
+    <div class="pill-content" *ngIf="mapinfo.type !== 'disabled'">
       <ng-container [ngSwitch]="mapinfo.type">
         <ng-container *ngSwitchCase="'past'">
           {{ mapinfo.map }} <img src="{{ mapinfo.left.logo }}" class="logo" />

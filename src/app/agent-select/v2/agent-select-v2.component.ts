@@ -1676,16 +1676,10 @@ export class AgentSelectV2Component implements OnInit, AfterViewInit, OnDestroy 
         return;
       }
 
-      // Get the default view model and access the map image property
-      const defaultVM = viewModelInstance.viewModel("Default");
-      if (!defaultVM) {
-        console.error("Default view model not found for map");
-        return;
-      }
-
-      const mapImageProperty = defaultVM.image("map");
+      // Use data binding for the map image property in the Default view model
+      const mapImageProperty = viewModelInstance.image("mapImage");
       if (!mapImageProperty) {
-        console.warn("Map image property not found in Rive animation");
+        console.warn("mapImage property not found in Rive Default view model");
         return;
       }
 
