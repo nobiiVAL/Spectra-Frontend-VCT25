@@ -1,7 +1,7 @@
 <div class="topinfo-container"
   [style.opacity]="!mapInfoForSlot(0).type ? '0' : '1'"
 >
-  <app-mapinfo
+  <app-mapinfo *ngIf="mapInfoForSlot(0).type !== 'disabled'"
     [map]="match.map"
     [mapinfo]="mapInfoForSlot(0)"
     [slotType]="'past'"
